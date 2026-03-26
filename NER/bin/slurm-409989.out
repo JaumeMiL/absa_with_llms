@@ -1,0 +1,162 @@
+========= ZERO SHOT ===  
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.17it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  2.00it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.81it/s]
+The module name  (originally ) is not a valid Python identifier. Please rename the original module to avoid import issues.
+Model loading took 2.1 seconds
+Processing example 0
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
+Processing example 1
+Processing example 2
+Processing example 3
+Processing example 4
+Processing example 5
+Processing example 6
+JSONDecodeError("Expecting ',' delimiter: line 1 column 149 (char 148)")
+{"PER":["Roy Keane", "Alex Ferguson"], "LOC":["Ireland", "Manchester United", "England", "Thursday", "Everton"], "ORG":["Manchester United", "F.A."]"}
+Processing example 7
+Processing example 8
+Processing example 9
+JSONDecodeError('Unterminated string starting at: line 1 column 869 (char 868)')
+{"PER":["Pete Sampras","Steffi Graf","David Rikl","Mark Philippoussis","Yayuk Basuki","Arantxa Sanchez Vicario","Natasha Zvereva","Andre Agassi","Karim Alami","Michael Chang","Daniel Vacek","Monica Seles","Thomas Muster","Richey Reneberg","Richard Krajicek","Todd Martin","Jim Courier","Stefan Edberg","Cedric Pioline","Yevgeny Kafelnikov","Anke Huber","Conchita Martinez","Lindsay Davenport","Amanda Coetzer","Martina Hingis","Jana Novotna","Ruxandra Dragomir"],"LOC":["Czech Republic","Indonesia","Australia","USA","Germany","Belarus","Netherlands","Morocco","Sweden","France","Romania","USA","USA","France","USA","USA","USA","USA","Australia","USA","USA","South Africa","Switzerland","USA","USA","Romania"],"ORG":[],"LOC":["USA","Berlin","Czech Republic","Indonesia","Australia","USA","Netherlands","USA","USA","USA","USA","USA","USA","France","USA","France","USA","USA
+Processing example 10
+Processing example 11
+Processing example 12
+Processing example 13
+Processing example 14
+Processing example 15
+Processing example 16
+Processing example 17
+Processing example 18
+JSONDecodeError('Unterminated string starting at: line 36 column 5 (char 750)')
+{
+  "PER": [
+    "Ilke Wyludda",
+    "Ellina Zvereva",
+    "Franka Dietzsch",
+    "Natalya Sadova",
+    "Mette Bergmann",
+    "Nicoleta Grasu",
+    "Olga Chernyavskaya",
+    "Irina Yatchenko",
+    "Ludmila Engquist",
+    "Michelle Freeman",
+    "Aliuska Lopez",
+    "Dionne Rose",
+    "Brigita Bukovec",
+    "Yulia Graudin",
+    "Julie Baumann",
+    "Patricia Girard-Leno",
+    "Dawn Bowles",
+    "Allen Johnson",
+    "Colin Jackson",
+    "Emilio Valle",
+    "Sven Pieters",
+    "Steve Brown",
+    "Frank Asselman",
+    "Hubert Grossard",
+    "Jonathan N'Senga",
+    "Johan Lisabeth",
+    "Roberta Brunet",
+    "Fernanda Ribeiro",
+    "Sally Barsosio",
+    "Paula Radcliffe",
+    "Julia Vaquero",
+    "Catherine McKiernan",
+    "Annette Peters",
+    "Pauline Konga
+Processing example 19
+Processing example 20
+Processing example 21
+Processing example 22
+Processing example 23
+Processing example 24
+JSONDecodeError("Expecting ',' delimiter: line 1 column 336 (char 335)")
+{"PER":["Rob Enderle","Scott Winkler"], "LOC":["Redmond","Wash.","New York","London","USA","Berlin","Times of London","Empire State building"], "ORG":["Microsoft Corp.","Giga Information Group","Symantec Corp.","Touchstone Software Corp.","PC Data Inc.","Gartner Group","Windows","Windows NT","Windows NT 4.0","Office 95","Windows 95"]
+Processing example 25
+Processing example 26
+Processing example 27
+Processing example 28
+Processing example 29
+JSONDecodeError("Expecting ',' delimiter: line 4 column 118 (char 598)")
+{
+  "PER": ["Michael Schumacher", "Jacques Villeneuve", "Mika Hakkinen", "Jean Alesi", "Damon Hill", "Gerhard Berger", "Mika Salo", "Ukyo Katayama", "Ricardo Rosset", "Pedro Lamy", "David Coulthard", "Martin Brundle", "Eddie Irvine", "Rubens Barrichello", "Pedro Diniz", "Jos Verstappen", "Olivier Panis", "Johnny Herbert", "Heinz-Harald Frentzen"],
+  "LOC": ["Belgium", "Germany", "Canada", "Finland", "France", "Britain", "Austria", "Japan", "Netherland", "Portugal", "Sunday"],
+  "ORG": ["Ferrari", "Williams", "McLaren", "Benetton", "Arrows", "Tyrrell", "Minardi", "Jordan", "Ligier", "Sauber"]
+Processing example 30
+Processing example 31
+Processing example 32
+Processing example 33
+Processing example 34
+Processing example 35
+Processing example 36
+Processing example 37
+Processing example 38
+Processing example 39
+Processing example 40
+Processing example 41
+Processing example 42
+Processing example 43
+Processing example 44
+Processing example 45
+Processing example 46
+Processing example 47
+Processing example 48
+Processing example 49
+Processing example 50
+Processing example 51
+Processing example 52
+Processing example 53
+JSONDecodeError("Expecting ',' delimiter: line 1 column 182 (char 181)")
+{"PER":["Miron Cozma","Danut Lupu","Petre Roman"],"LOC":["Romania","Berlin","Petrosani","Bucharest","Petrosan"],"ORG":["Romanian Soccer Federation","Jiul Petrosani","Miners' union"]
+Processing example 54
+Processing example 55
+Processing example 56
+JSONDecodeError("Expecting ',' delimiter: line 4 column 84 (char 306)")
+{
+  "PER": ["Jean-Pierre Cyprien", "Claudio Moura", "Roger Hegi", "Gilbert Facchinetti", "Gilbert Gress"],
+  "LOC": ["Switzerland", "Neuchatel", "France", "Italy", "Berlin", "Cyprien", "Saturday", "St Gallen", "Saturday"],
+  "ORG": ["Neuchatel Xamax", "Swiss league", "Swiss league disciplinary committee"]
+Processing example 57
+JSONDecodeError("Expecting ',' delimiter: line 1 column 254 (char 253)")
+{"PER":["Gabor Sitanyi", "Tamas Erdei"], "LOC":["Hungary", "London", "Budapest", "Poland", "Czech Republic", "Europe", "ING Barings", "ABN-AMRO Hoare Govett", "Krpanco a.s."], "ORG":["Cofinec S.A.", "ING Barings", "ABN-AMRO Hoare Govett", "Krpaco a.s."]"}
+Processing example 58
+Processing example 59
+Processing example 60
+Processing example 61
+Processing example 62
+Processing example 63
+Processing example 64
+JSONDecodeError('Unterminated string starting at: line 1 column 751 (char 750)')
+{"PER":["Ludmila Ninova","Heike Drechsler","Fiona May","Emilio Valle","Steve Brown","Andrea Giaconi","Chandra Sturrup","Natalya Voronova","Gabi Rokmeier","Sergey Makarov","Tom Pukstys","Peter Blank","Osmond Ezinwa","Davidson Ezinwa","Stefano Tilli","Davis Kamoga","Marco Vaccari","Kennedy Ochieng","Mariacarla Bresciani","Andrea Muller","Nastja Rysich","Ana Fidelia Quirot","Letitia Vriesde","Inez Turner","Wolfgang Kreissig","Kostantin Matusevitch","Michele Buiatti","Robert Kibet","Vincent Malakwen","Philip Kibitok","Oksana Ovchinnikova","Natalya Shikolenko","Silke Renk","Virna De Angeli","Natalya Torshina","Anna Knoroz","Lauren Ottoz","Brian Bronson","John Ridgeon","Luke Kipkosgei","Alessandro Lambruschini","Richard Kosgei"],"LOC":["Austria","Germany
+Processing example 65
+Processing example 66
+JSONDecodeError("Expecting ',' delimiter: line 2 column 1 (char 285)")
+{"PER":["Rodney Eyles","Peter Nicol","Derek Ryan","Simon Parke","Chris Walker","Jonathon Power","Amr Shabana","John White","Paul Johnson","Tony Hands","Zubair Jahan Khan","Julian Wellings","Ahmed Barada","Zarak Jahan Khan","Faheem Khan","Julien Bonetat","John Smith","Mr Smith","Mr"] 
+"LOC":["Australia","Pakistan","Scotland","England","Hong Kong","Canada","Egypt","France"] 
+"ORG":["SQUASH"]}
+Processing example 67
+Processing example 68
+Processing example 69
+Processing example 70
+Processing example 71
+JSONDecodeError("Expecting ',' delimiter: line 1 column 175 (char 174)")
+{"PER":["George Joulwan", "John Sheehan"], "LOC":["Iceland", "Spain", "Portugal", "Belgium", "Luxembourg", "Netherlands", "Iberia", "North Atlantic", "NATO", "USA", "Berlin"]
+Processing example 72
+Processing example 73
+JSONDecodeError('Unterminated string starting at: line 2 column 666 (char 667)')
+{
+  "PER": ["Anna Kournikova", "Natalia Baudone", "Rita Grande", "Tina Krizan", "Els Callens", "Annabel Ellwood", "Elena Likhovtseva", "Lila Osterloh", "Sandra Dopfer", "Nanne Dahlman", "Thomas Enqvist", "Guillaume Raoux", "Sergi Bruguera", "Michael Stich", "Jakob Hlasek", "Alberto Berasategui", "Steffi Graf", "Karin Kschwendt", "Naoko Kijimuta", "Alexandra Fusai", "Natasha Zvereva", "Ai Sugiyama", "Barbara Paulus", "Elena Wagner", "Petra Langrova", "Naoko Sawamatsu", "Karina Habsudova", "Nathalie Dechy", "Jana Novotna", "Florencia Labat", "Thomas Muster", "Dirk Dier", "Pablo Campana", "Mark Knowles", "Jason Stoltenberg", "Kenneth Carlsen", "Arnaud Boetsch", "Magnus
+Processing example 74
+JSONDecodeError('Unterminated string starting at: line 1 column 707 (char 706)')
+{"PER":["John Smith","Mr. Smith","Soccer","Vitesse Arnhem","Sparta Rotterdam","Utrecht","Twente Enschede","Groningen","Roda JC Kerkrade","Feyenoord","Willem II Tilburg","RKC Waalwijk","Fortuna Sittard","Heerenveen","Ajax Amsterdam","AZ Alkmaar","NAC Breda","NEC Nijmegen","Graafschap Doetinchem","PSV Eindhoven","Groningen","Nijmegen","Tilburg","Waalwijk","Doetinchem","Sittard","Enschede","Rotterdam","Eindhoven","Amsterdam","Alkmaar","Kerkrade","Doetinchem","Utrecht","Breda","Nijmegen","Arnhem","Rotterdam","Tilburg","Waalwijk","Enschede","Sittard","Heerenveen","Amsterdam","Alkmaar","Nijmegen","Breda","Rotterdam","Eindhoven","Arnhem","Tilburg","Waalwijk","Doetinchem","Sittard","Enschede","Rotterdam","Eindhoven
+Processing example 75
+JSONDecodeError("Expecting ',' delimiter: line 1 column 87 (char 86)")
+{"PER":["Sheikh Ahmed Yassin","Yasser Arafat"],"LOC":["Israel","Ramle","USA","Berlin"]
+Processing example 76
+Processing example 77
+Processing example 78
+Processing example 79
+Processing example 80
+Processing example 81
+Processing example 82
+Done
+Processed 83 examples in 131.2 seconds. (1.58 sec/example)
