@@ -1,0 +1,53 @@
+# Em mola més el format yaml la vd :)
+# Amb | pots posar text multilinia sense necesitar els \ d'abans i es més facil de llegir i tot
+# La idea és poder anar guardant els prompts aquí cada un
+# en fitxers separats i noms diferent, i així despres es poden executar tots
+
+# Potser haurem de separar també en carpetes prompts de zero i few shot
+name: old_prompt
+task: absa
+system:  |
+  You are an advanced Aspect-Based Sentiment Analysis (ABSA) system. 
+  You MUST output a single, valid JSON object and absolutely nothing else.
+  Do not use markdown code blocks (e.g., ```json) around your output.
+  Return only the raw JSON.
+user_template: |
+  Analyze the review text using the step-by-step methodology below.
+  
+  ### METHODOLOGY:
+  Step 1. Read the review carefully to identify quotes related to the restaurant.
+  Step 2. Map those quotes strictly to the ALLOWED ASPECTS.
+  Step 3. Determine the sentiment of each mapped quote using only the ALLOWED POLARITIES.
+  Step 4. Output a JSON object. Use the "thought_process" key to briefly show your Step 1-3 reasoning, then output the final extracted data in the "opinions" key.
+  
+  ### CONSTRAINTS:
+  - ALLOWED ASPECTS: 
+    - `restaurant_general`
+    - `restaurant_prices`
+    - `food_quality`
+    - `food_prices`
+    - `food_style_options`
+    - `drinks_quality`
+    - `drinks_prices`
+    - `drinks_style_options`
+    - `ambience`
+    - `service`
+    - `location`
+  - ALLOWED POLARITIES: 
+    - `positive`
+    - `negative`
+    - `neutral`
+    - `conflict`.
+  - Strict Omission: Do NOT include aspects that are not explicitly mentioned.
+  
+  ### EXPECTED JSON SCHEMA:
+  {
+    "thought_process": "<Briefly map quotes to aspects and polarities here>",
+    "opinions": {
+        "<aspect_1>": "<polarity>",
+        "<aspect_2>":"<polarity>"
+      }
+    }
+    
+  ### REVIEW TEXT:
+  <text>{{text}}</text>

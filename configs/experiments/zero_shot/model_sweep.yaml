@@ -1,0 +1,35 @@
+# Em mola també tenir configuracions
+# per els experiments, i que el codi simplement
+# carregui un config i així no haguem d'estar
+# tot el rato canviant manualment les coses del codi
+# Estructura del podria ser algo rollo
+kind: tipus_de_run_que_es(inferencia/finetune/generacio)
+name: nom_de_experiment
+
+output: runs # On va l'output, aixi tambe podem controlar
+
+model:
+  name: llama32B3
+  quantization: none # per després si eso, o sino es posa al model name o es canvia el path o algo
+
+prompt:
+  file: configs/prompts/test.yaml # carreguem / canviem els prompts des d'aquí
+
+few_shot:
+  shots: 0 # Per fer zero shot posem a zero, i per few shot així podem controlar?
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0 # ns si ha més configs de decoding pero eso també controlables
+
+seeds: [42] # estaria be poder passar o una seed o varies i que fes els diversos runs
+
+matrix: # matriu de combinacions a provar?? per poder fer ablations directament des d'un mateix config?
+  model.name: 
+  model.quantization:
+  prompt.file:
+    - configs/prompts/prompt1.yaml
+    - configs/prompts/prompt2.yaml
+    - configs/prompts/prompt3.yaml
+  decoding.temperature: [0.0, 0.1, 0.2] # rollo poder "sobre-escriure" diferents parts / que executi la combinatoria de tot vaja
+
