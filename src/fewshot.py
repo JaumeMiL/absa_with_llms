@@ -2,7 +2,7 @@ import os,sys,time,copy,json
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from common import get_prompts, load_dataset, encode, generate, extract_json
+from src.common import get_prompts, load_dataset, encode, generate, extract_json
 
 # ------------ check command line and get arguments -----------------
 def get_arguments():
