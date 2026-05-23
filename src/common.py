@@ -1,33 +1,133 @@
 import json
 import torch
+import yaml
+from pathlib import Path
+from constants import PROMPT_DIR, resolve_path
 
 # ------------ get system and user prompts -----------------
-def get_prompts():
-    # we can set the prompts manually, or better, load them from a given file,
-    # so we can experiment with different prompt combinations without changing the code
-    prompts = {}
-    prompts["sysprompt"] = "\n".join(["You are an journalist assistant in a news agency and your mission is to read news items and extract the list of entities mentioned in it.",
-                   "Mentioned entities may belong to one of the following types:",
-                   "",
-                   "  - Person (PER): The name of a person",
-                   "  - Location (LOC): The name of a country, city, region, etc.",
-                   "  - Organization (ORG): The name of a company, government agency, foundation, bank, ministery, etc."
-                  ])
-                  
-    prompts["usrprompt"] = "\n".join(["Given the following text, extract entities, classified by their type (PER, LOC, ORG)",
-               "Provide the output as a json dictionary, with a key for each appearing entity type, and a list of names as value (e.g. {\"PER\":[\"John Smith\"], \"LOC\":[\"USA\", \"Berlin\"]} )",
-	       "",
-               "It is important that you take into account the following constraints:",
-               "  - If an entity is mentioned twice with the same words, extract it only once.",
-               "  - If an entity is mentioned twice with the different words (e.g. John Smith and Mr. Smith), extract it in both cases.",
-               "  - Only the three types in the above list are valid. DO NOT introduce new ones.",
-               "  - DO NOT INCLUDE in the json entity types for which no entity is mentioned.",
-               "  - Produce just the json, do not add further explanations."
-              ])
+def _prompt_path(name_or_path):
+    # Utilitza Paths de pathlib per poder fer servir .exists
+    path = Path(name_or_path)
+    if path.exists():
+        return path
+    if path.suffix:
+        resolved = resolve_path(path)
+        if resolved.exists():
+            return resolved
+        return PROMPT_DIR / path
 
-    return prompts
+    normalized = str(name_or_path).replace("\\", "/") # windows fa coses rares
+
+    candidates = [
+        PROMPT_DIR / f"{normalized}.yaml",
+        PROMPT_DIR / f"{normalized}.yml",
+        PROMPT_DIR / f"{normalized}.json",
+        PROMPT_DIR / "zero_shot" / f"{normalized}.yaml",
+        PROMPT_DIR / "few_shot" / f"{normalized}.yaml",
+        PROMPT_DIR / "generation" / f"{normalized}.yaml",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    matches = list(PROMPT_DIR.rglob(f"{Path(normalized).name}.yaml"))
+    # rglob llista subdirectoris recurisvament que matchegin el pattern
+    if matches:
+        return matches[0]
+    return candidates[0]
+
+def load_prompt(name_or_path = "zero_shot/baseline"):
+    path = _prompt_path(name_or_path)
+    with path.open("r", encoding="utf-8") as handle: # encoding utf-8 sino feia coses rares / em petava a windows
+        if path.suffix.lower() in {".yaml", ".yml"}:
+            raw = yaml.safe_load(handle)
+        else:
+            raw = json.load(handle)
+    prompt = dict(raw)
+    prompt["_path"] = str(path)
+
+    if "system" not in prompt and "sysprompt" in prompt: # should work with old jsons :)
+        prompt["system"] = prompt["sysprompt"]
+
+    if "user_template" not in prompt and "usrprompt" in prompt:
+        prompt["user_template"] = prompt["usrprompt"]
+        
+    if "system" not in prompt or "user_template" not in prompt:
+        raise ValueError(f"Prompt must define system/user_template or sysprompt/usrprompt: {path}")
     
+    return prompt
+
+    
+
+def _format_template(template , example = None, **values):
+    # Pilla strings com "Hola {nom}, bon dia" i subtitueix {nom}
+    example = example or {}
+    # Pilla la info de l'exemple ?
+    data = {
+        "id": example.get("id", ""),
+        "rid": example.get("rid", example.get("id", "")),
+        "language": example.get("language", ""),
+        "text": example.get("text", ""),
+        "opinions_json": json.dumps(
+            values.get("opinions", example.get("gold", example.get("opinions", {}))),
+            ensure_ascii=False,
+            sort_keys=True,
+        ),
+    }
+    # opinions es carrega o be dels values o be del gold de l'exemple o be de si l'exemple diu opinions pq ns
+    # values de moment no ho faig servir però es per si vols passar valors esepcifics tambee
+    data.update(values)
+
+    rendered = template
+    for key, value in data.items():
+        rendered = rendered.replace("{{" + key + "}}", str(value)) # substitueix les keys pels valors, si el format es {{}}}
+    try:
+        rendered = rendered.format(**data) # PYTHON TE UN FORMAT PER DEFECTE QUE ES {}
+        # PQ COLLONS FEI ASERVIR {{}}
+    
+    except (KeyError, ValueError):
+        pass
+
+    if "{text}" not in template and "{{text}}" not in template and "<text>{{text}}</text>" not in template:
+        if data["text"]:
+            rendered = f"{rendered.rstrip()}\n\nTEXT:\n{data['text']}" # a molt males afegeix el text tal qual amb intro
+    
+    return rendered
+
+
+def render_user(prompt, example):
+    return _format_template(prompt["user_template"], example)
+
+
+def render_generation_user(prompt, opinions):
+    # Example = None
+    return _format_template(prompt["user_template"], None, opinions=opinions)
+
+
+def render_extraction_messages(prompt, example, shots = None):
+    # tots els que son render és pillar el template i posar-li realment el text que toca a les variables
+    messages = [{"role": "system", "content": prompt["system"]}]
+    for shot in shots or []: # shots és none pq sino python fa la merda aquella de passar la mateixa llista sempre a les variables, per si de cas
+        messages.append({"role": "user", "content": render_user(prompt, shot)})
+        messages.append(
+            {
+                "role": "assistant",
+                "content": json.dumps(shot.get("gold", {}), ensure_ascii=False, sort_keys=True),
+            }
+        )
+    messages.append({"role": "user", "content": render_user(prompt, example)})
+    return messages
+
        
+
+def render_generation_messages(prompt, opinions, shots = None):
+    messages = [{"role": "system", "content": prompt["system"]}]
+    for shot in shots or []:
+        messages.append({"role": "user", "content": render_generation_user(prompt, shot.get("gold", {}))})
+        messages.append({"role": "assistant", "content": shot.get("text", "")})
+    messages.append({"role": "user", "content": render_generation_user(prompt, opinions)})
+    return messages
+
+
 # ------------ load dataset (either "train", or "devel") -----------------
 def load_dataset(data) :
     with open(f"dataset/{data}.json") as f : 
@@ -38,11 +138,11 @@ def load_dataset(data) :
 def prepare_messages(prompts, question) :
     
     # First, system message
-    messages = [{"role": "system", "content": prompts["sysprompt"]}]
+    messages = [{"role": "system", "content": prompts["system"]}]
  
     # then, add the text we want the anwer for, so the model will complete the response
     messages.append({"role": "user", 
-                     "content": prompts["usrprompt"]
+                     "content": prompts["user_template"]
                                 + "\nTEXT: "
                                 + question['text']})
     return messages

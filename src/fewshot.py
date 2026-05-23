@@ -3,6 +3,19 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from src.common import get_prompts, load_dataset, encode, generate, extract_json
+import random
+
+# ------------ select shots ------------
+
+def select_shots(train, num_shots, strategy, seed):
+    # different strategies could be simply first, random or selecting a diverse set (function below)
+    raise NotImplementedError("Selection of fewshot examples not implemented")
+
+def select_diverse(train, num_shots, seed):
+    # diverse rollo seria assegurant-se que totes les possibles combinacions (o el màxim) estan cobertes
+    # idk why some comments are in english and others in catalan tho i have multiple personalities
+    raise NotImplementedError("Selection of fewshot examples for diversity not implemented.")
+
 
 # ------------ check command line and get arguments -----------------
 def get_arguments():

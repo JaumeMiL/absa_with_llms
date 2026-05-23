@@ -3,7 +3,57 @@ import os,sys,time,copy,json
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from src.common import get_prompts, load_dataset, prepare_messages, encode, generate, extract_json
+from src.common import load_prompt, load_dataset, prepare_messages, encode, generate, extract_json
+
+# renamed to inference.py :)
+
+
+
+def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens):
+
+    raise NotImplementedError("Generate text not implemented")
+
+"""
+Com a referencia, antic feia
+
+
+def encode(tokenizer, messages) :
+    # convert the sequence of messages to an actual prompt in the format
+    # expected by the model.
+    # Tokenize and encode the prompt.
+    input_ids = tokenizer.apply_chat_template(messages,
+                                              tokenize=True,
+                                              add_generation_prompt=True,
+                                              return_tensors="pt").to("cuda")
+    return input_ids
+
+
+def generate(model, tokenizer, input_ids):
+    # generate likely continuation (assistant answer)
+    with torch.no_grad():
+        gen_tokens = model.generate(input_ids,
+                                    max_new_tokens=256,
+                                    pad_token_id=tokenizer.eos_token_id
+                                   )
+    promptlen = len(input_ids[0])
+    # decode obtained tokens back into text
+    gen_text = tokenizer.decode(gen_tokens[0][promptlen:], skip_special_tokens=True)
+    return gen_text
+
+"""
+
+
+# NOSE SI POSAR-LO AQUI O EN UN COMMON / BUILDERS o algo aixi pero bno
+def load_model_and_tokenizer(model_name, quantization, adapter, device, model_path):
+    # Bno aqui hauria de fer lo de la funcio de baix de load_model xd
+
+    # Paaassa que segurament, hauria d'incloure també opcions per
+    # carregar adapter si te (de finetune-inference), utilitzar quantization
+    # si no hi ha chat template definir-lo
+    raise NotImplementedError("Load model and tokenizer not implemented")
+
+
+
 
 # ------------ load model and tokenizer -----------------
 def load_model():
@@ -37,7 +87,7 @@ print(f"========= ZERO SHOT ===  ")
 model, tokenizer = load_model()
 
 # get system and user prompts
-prompts = get_prompts()
+prompts = load_prompt()
 
 # load data to process
 examples = load_dataset("devel")
