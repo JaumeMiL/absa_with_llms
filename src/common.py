@@ -3,6 +3,40 @@ import torch
 import yaml
 from pathlib import Path
 from constants import PROMPT_DIR, resolve_path
+from typing import Any
+import copy
+import itertools
+
+
+def prompt_label(prompt_file):
+    path = Path(prompt_file)
+    if path.suffix:
+        return path.stem
+    return str(prompt_file).replace("\\", "/").split("/")[-1]
+
+
+def get_nested(data, dotted, default = None): # es per poder accedir amb name.name.name a dins d'un dict de dicts ns si m'explico
+    # aixi podem accedir a les categories del config rollo fent few_shot.shots o si la categoria te mes subcategories amb més punts
+    current = data
+    for part in dotted.split("."):
+        if not isinstance(current, dict) or part not in current:
+            return default
+        current = current[part]
+    return current
+
+def load_config(path):
+    # El fa servir run_experment.py de moment
+    path = resolve_path(path)
+    with path.open("r", encoding="utf-8") as handle:
+        if path.suffix.lower() in {".yaml", ".yml"}:
+            data = yaml.safe_load(handle)
+        else:
+            data = json.load(handle)
+    if not isinstance(data, dict):
+        raise ValueError(f"Config must be a mapping: {path}")
+    data["_path"] = str(path)
+    return data
+
 
 # ------------ get system and user prompts -----------------
 def _prompt_path(name_or_path):

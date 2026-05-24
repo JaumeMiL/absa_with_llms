@@ -1,7 +1,7 @@
 # load data / save data
 import json
 from pathlib import Path
-from .constants import DATASET_DIR
+from constants import DATASET_DIR
 
 def load_json(path):
     with Path(path).open("r", encoding="utf-8") as handle:
