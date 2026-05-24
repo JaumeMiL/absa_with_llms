@@ -1,7 +1,7 @@
 import json
 import random
 
-from .constants import ASPECTS, GENERATED_DIR, ensure_dir
+from constants import ASPECTS, GENERATED_DIR, ensure_dir
 from common import load_prompt, render_extraction_messages, render_generation_messages
 from data import write_json, load_dataset
 import time
@@ -11,14 +11,13 @@ from pathlib import Path
 
 
 
-from .constants import ALLOWED_ASPECTS, ALLOWED_POLARITIES
-from .data import load_dataset, write_json
-from .fewshot import select_shots
-from .inference import generate_text, load_model_and_tokenizer
+from data import load_dataset, write_json
+from fewshot import select_shots
+from inference import generate_text, load_model_and_tokenizer
 
-from .logging_utils import RunLogger
+from logging_utils import RunLogger
 
-from .parsing import normalize_prediction
+from parsing import normalize_prediction
 import numpy as np
 import torch
 
@@ -70,7 +69,7 @@ def make_run_id(task, params):
 def generate_opinion_specs(count = 1000, seed = 42):
     rng = random.Random(seed)
     specs = []
-    seen = {}
+    seen = set()
     polarities = list(POLARITY_WEIGHTS)
     weights = [POLARITY_WEIGHTS[polarity] for polarity in polarities]
     attempts = 0
