@@ -10,7 +10,7 @@ from typing import Any
 from synthetic import run_augmentation
 from common import get_nested, prompt_label
 from inference import run_inference
-from constants import ARTIFACTS_DIR
+from constants import ARTIFACTS_DIR, RUNS_DIR
 from train import run_training
 
 
@@ -72,8 +72,27 @@ def _slug(value):
 
 
 def _run_inference_config(config: dict[str, Any]) -> Path:
-    raise NotImplementedError("Inference not yet implemented")
-
+    prompt_file = get_nested(config, "prompt.file", "configs/prompts/zero_shot/baseline.yaml")
+    shots = int(get_nested(config, "few_shot.shots", 0) or 0)
+    mode = "few" if shots else "zero"
+    return run_inference(
+        mode=mode,
+        model_name=get_nested(config, "model.name", "llama32B3"),
+        model_path=get_nested(config, "model.path"),
+        prompt_name=prompt_file,
+        split=config.get("split", "devel"),
+        output_root=config.get("output_root", str(RUNS_DIR)),
+        run_name=_run_name(config, "few_shot" if shots else "zero_shot", prompt_file),
+        shots=shots,
+        shot_strategy=get_nested(config, "few_shot.strategy", "first"),
+        temperature=float(get_nested(config, "decoding.temperature", 0.0)),
+        top_p=float(get_nested(config, "decoding.top_p", 1.0)),
+        max_new_tokens=int(get_nested(config, "decoding.max_new_tokens", 128)),
+        seed=int(get_nested(config, "seed", 13)),
+        quantization=get_nested(config, "model.quantization", "none"),
+        adapter=get_nested(config, "model.adapter"),
+        limit=config.get("limit"),
+    )
 
 def _run_augmentation_config(config):
     return run_augmentation(
