@@ -1,0 +1,38 @@
+kind: finetune
+name: finetune_single_base_lora
+description: One LoRA fine-tuning run on the original train split.
+
+output_root: ABSA/runs
+
+model:
+  name: qwen-small # llama32B3
+  path:
+  quantization: none
+
+prompt:
+  file: configs/prompts/zero_shot/baseline.yaml
+
+data:
+  train: train
+  devel: devel
+  synthetic:
+
+training:
+  max_length: 1024
+  epochs: 3
+  learning_rate: 0.00002
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  eval_accumulation_steps: 4
+  save_total_limit: 2
+  bf16: true
+  fp16: false
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+
+seed: 13
+

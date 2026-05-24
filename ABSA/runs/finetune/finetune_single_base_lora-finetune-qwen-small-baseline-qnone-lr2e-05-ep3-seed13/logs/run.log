@@ -1,0 +1,10 @@
+[2026-05-24T18:44:22] Starting fine-tuning run | run_id=finetune_single_base_lora-finetune-qwen-small-baseline-qnone-lr2e-05-ep3-seed13 model=qwen-small seed=13 quantization=none
+[2026-05-24T18:44:22] Loaded data and prompt | train_examples=1056 devel_examples=132 prompt=configs\prompts\zero_shot\baseline.yaml synthetic=
+[2026-05-24T18:44:22] Loading training model
+[2026-05-24T18:44:31] Training model loaded
+[2026-05-24T18:44:39] Starting trainer.train
+[2026-05-24T18:49:21] Starting fine-tuning run | run_id=finetune_single_base_lora-finetune-qwen-small-baseline-qnone-lr2e-05-ep3-seed13 model=qwen-small seed=13 quantization=none
+[2026-05-24T18:49:21] Loaded data and prompt | train_examples=1056 devel_examples=132 prompt=configs\prompts\zero_shot\baseline.yaml synthetic=
+[2026-05-24T18:49:21] Loading training model
+[2026-05-24T18:49:28] Training model loaded
+[2026-05-24T18:49:36] Starting trainer.train

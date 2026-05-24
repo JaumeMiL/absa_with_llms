@@ -1,0 +1,40 @@
+{
+  "run_id": "finetune_single_base_lora-finetune-qwen-small-baseline-qnone-lr2e-05-ep3-seed13",
+  "params": {
+    "task": "finetune",
+    "model": "qwen-small",
+    "prompt": "configs/prompts/zero_shot/baseline.yaml",
+    "train_data": "train",
+    "devel_data": "devel",
+    "synthetic_data": null,
+    "quantization": "none",
+    "model_path": null,
+    "seed": 13,
+    "max_length": 1024,
+    "epochs": 3.0,
+    "learning_rate": 2e-05,
+    "per_device_train_batch_size": 1,
+    "per_device_eval_batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "eval_accumulation_steps": 4,
+    "lora_r": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "save_total_limit": 2,
+    "bf16": false,
+    "fp16": false
+  },
+  "model_spec": {
+    "name": "qwen-small",
+    "paths": [
+      "Qwen/Qwen2.5-0.5B-Instruct"
+    ],
+    "reportable": false,
+    "lora_targets": [
+      "q_proj",
+      "v_proj"
+    ],
+    "local_smoke": true,
+    "trust_remote_code": false
+  }
+}

@@ -111,4 +111,29 @@ def _run_augmentation_config(config):
 
 
 def _run_finetune_config(config: dict[str, Any]) -> Path:
-    raise NotImplementedError("Finetune not yet implemented")
+    # fua igual masses parametres jaja
+    return run_training(
+        model_name=get_nested(config, "model.name", "llama32B3"),
+        model_path=get_nested(config, "model.path"),
+        prompt_name=get_nested(config, "prompt.file", "configs/prompts/zero_shot/baseline.yaml"),
+        train_data=get_nested(config, "data.train", "train"),
+        devel_data=get_nested(config, "data.devel", "devel"),
+        synthetic_data=get_nested(config, "data.synthetic"),
+        output_root=config.get("output_root", str(RUNS_DIR)),
+        run_name=_run_name(config, "finetune", get_nested(config, "prompt.file")),
+        quantization=get_nested(config, "model.quantization", "none"), # NO EXISTEIX ENCARA
+        seed=int(get_nested(config, "seed", 13)),
+        max_length=int(get_nested(config, "training.max_length", 1024)),
+        epochs=float(get_nested(config, "training.epochs", 3.0)),
+        learning_rate=float(get_nested(config, "training.learning_rate", 2e-5)),
+        per_device_train_batch_size=int(get_nested(config, "training.per_device_train_batch_size", 1)),
+        per_device_eval_batch_size=int(get_nested(config, "training.per_device_eval_batch_size", 1)),
+        gradient_accumulation_steps=int(get_nested(config, "training.gradient_accumulation_steps", 8)),
+        eval_accumulation_steps=int(get_nested(config, "training.eval_accumulation_steps", 4)),
+        lora_r=int(get_nested(config, "lora.r", 8)),
+        lora_alpha=int(get_nested(config, "lora.alpha", 16)),
+        lora_dropout=float(get_nested(config, "lora.dropout", 0.05)),
+        save_total_limit=int(get_nested(config, "training.save_total_limit", 2)),
+        bf16=bool(get_nested(config, "training.bf16", True)),
+        fp16=bool(get_nested(config, "training.fp16", False)),
+    )
