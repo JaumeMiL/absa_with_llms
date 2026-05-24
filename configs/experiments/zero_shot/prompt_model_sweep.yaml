@@ -1,0 +1,36 @@
+kind: inference
+name: zero_shot_prompt_model_sweep
+description: Zero-shot comparison across reportable models, extraction prompts, decoding settings, seeds, and optional 4-bit loading.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+
+prompt:
+  file: configs/prompts/zero_shot/baseline.yaml
+
+few_shot:
+  shots: 0
+  strategy: first
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 128
+
+seeds: [13, 37, 101]
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none] # 4 bit
+  prompt.file:
+    - configs/prompts/zero_shot/baseline.yaml
+    - configs/prompts/zero_shot/strict_json.yaml
+    - configs/prompts/zero_shot/bilingual.yaml
+  decoding.temperature: [0.0, 0.2]
+  decoding.top_p: [1.0, 0.9]

@@ -2,7 +2,7 @@ kind: finetune
 name: finetune_single_base_lora
 description: One LoRA fine-tuning run on the original train split.
 
-output_root: ABSA/runs
+output_root: runs
 
 model:
   name: qwen-small # llama32B3

@@ -244,6 +244,7 @@ def run_inference(
             # els extraction messages son els de prediccio a partir de text
             # els generaiton messages son els de predir text a partir del gold q fa servir synthetic
             messages = render_extraction_messages(prompt, example, selected_shots)
+            logger.log(messages)
             raw = generate_text(
                 model,
                 tokenizer,
