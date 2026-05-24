@@ -100,7 +100,7 @@ MODEL_REGISTRY: dict[str, ModelSpec] = {
     ),
     "qwen-small": ModelSpec(
         name="qwen-small",
-        paths=("Qwen/Qwen2.5-0.5B",),
+        paths=("Qwen/Qwen2.5-0.5B-Instruct",),
         reportable=False,
         lora_targets=("q_proj", "v_proj"),
         local_smoke=True,
