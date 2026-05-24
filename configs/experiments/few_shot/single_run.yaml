@@ -1,0 +1,23 @@
+kind: inference
+name: few_shot_single_llama
+
+split: devel
+output: runs
+
+model:
+  name: llama32B3
+  quantization: none
+
+prompt:
+  file: configs/prompts/zero_shot/baseline.yaml
+
+few_shot:
+  shots: 8
+  strategy: first
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 256
+
+seed: 13

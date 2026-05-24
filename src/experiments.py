@@ -81,7 +81,7 @@ def _run_inference_config(config: dict[str, Any]) -> Path:
         model_path=get_nested(config, "model.path"),
         prompt_name=prompt_file,
         split=config.get("split", "devel"),
-        output_root=config.get("output_root", str(RUNS_DIR)),
+        output_root=config.get("output_root", config.get("output", str(RUNS_DIR))),
         run_name=_run_name(config, "few_shot" if shots else "zero_shot", prompt_file),
         shots=shots,
         shot_strategy=get_nested(config, "few_shot.strategy", "first"),
