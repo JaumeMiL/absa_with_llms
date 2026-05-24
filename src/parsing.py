@@ -2,11 +2,11 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from .constants import ALLOWED_ASPECTS, ALLOWED_POLARITIES
+from constants import ASPECTS, POLARITIES
 
 
-ALLOWED_ASPECT_SET = set(ALLOWED_ASPECTS)
-ALLOWED_POLARITY_SET = set(ALLOWED_POLARITIES)
+ALLOWED_ASPECT_SET = set(ASPECTS)
+ALLOWED_POLARITY_SET = set(POLARITIES)
 
 # Aixo es per parsejar les respostes idealment
 # rollo per extreure els jsons del text q genera el model 
@@ -21,9 +21,47 @@ class NormalizedPrediction:
 
 
 def extract_json_object(raw):
-    # aqui la gracia seria extreure el json del text i retornar-lo maco
-    raise NotImplementedError("FDSFFADSFAS tinc son")
+    # Extracts a JSON dictionary from a raw LLM output string.
 
+    # errors rapids fora
+    if isinstance(raw, dict):
+        return raw, None
+    if raw is None:
+        return {}, "empty prediction"
+    if not isinstance(raw, str):
+        return {}, f"prediction is {type(raw).__name__}, not str/dict"
+
+    # borra les tonteries de markdown que fan els models de ```
+    text = raw.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]  # Drop the top fence
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1] # Drop the bottom fence
+        text = "\n".join(lines).strip()
+
+    # Intenta directament carregar el json si pot
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed, None
+        return {}, f"parsed JSON is {type(parsed).__name__}, not object"
+    except json.JSONDecodeError:
+        pass  # If it fails, we move to the fallback strategy
+
+    # si hi ha text abans, busca el primer { i intenta decodificar la resta
+    start_idx = text.find("{")
+    if start_idx != -1:
+        try:
+            decoder = json.JSONDecoder()
+            parsed, _ = decoder.raw_decode(text[start_idx:])
+            if isinstance(parsed, dict):
+                return parsed, None
+        except json.JSONDecodeError:
+            pass
+
+    return {}, "could not parse JSON object"
 
 def normalize_prediction(raw) -> NormalizedPrediction:
     # retorna un objecte de "normalized prediction" q basicament te els les opinions i si es un json valid i tal
