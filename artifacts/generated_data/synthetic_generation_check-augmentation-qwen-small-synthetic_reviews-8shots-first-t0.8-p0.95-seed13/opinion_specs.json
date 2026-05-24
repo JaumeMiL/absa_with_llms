@@ -1,0 +1,116 @@
+[
+  {
+    "food_quality": "positive",
+    "location": "negative"
+  },
+  {
+    "food_quality": "negative",
+    "food_style_options": "negative",
+    "location": "positive",
+    "restaurant_prices": "positive",
+    "service": "negative"
+  },
+  {
+    "drinks_prices": "negative",
+    "food_prices": "conflict",
+    "food_quality": "negative",
+    "food_style_options": "positive",
+    "location": "negative",
+    "restaurant_prices": "positive"
+  },
+  {
+    "drinks_prices": "positive",
+    "drinks_quality": "positive",
+    "location": "positive",
+    "service": "positive"
+  },
+  {
+    "ambience": "positive",
+    "drinks_style_options": "negative",
+    "food_quality": "positive",
+    "food_style_options": "positive"
+  },
+  {
+    "drinks_quality": "positive",
+    "food_style_options": "positive"
+  },
+  {
+    "drinks_style_options": "positive",
+    "food_quality": "positive",
+    "service": "neutral"
+  },
+  {
+    "drinks_prices": "positive",
+    "drinks_style_options": "negative",
+    "food_quality": "conflict",
+    "restaurant_prices": "positive"
+  },
+  {
+    "drinks_style_options": "positive",
+    "food_style_options": "positive"
+  },
+  {
+    "ambience": "positive",
+    "drinks_quality": "negative",
+    "food_prices": "positive",
+    "food_quality": "positive",
+    "location": "positive"
+  },
+  {
+    "drinks_quality": "positive",
+    "food_quality": "positive",
+    "location": "negative",
+    "service": "positive"
+  },
+  {
+    "drinks_prices": "positive",
+    "restaurant_prices": "positive"
+  },
+  {
+    "drinks_quality": "positive",
+    "drinks_style_options": "positive",
+    "restaurant_general": "positive"
+  },
+  {
+    "drinks_prices": "positive",
+    "food_style_options": "negative",
+    "service": "conflict"
+  },
+  {
+    "drinks_quality": "positive",
+    "location": "positive",
+    "restaurant_general": "conflict"
+  },
+  {
+    "drinks_style_options": "positive",
+    "food_prices": "positive",
+    "service": "positive"
+  },
+  {
+    "drinks_prices": "positive",
+    "food_prices": "positive",
+    "food_quality": "negative",
+    "food_style_options": "positive",
+    "location": "positive"
+  },
+  {
+    "drinks_prices": "positive",
+    "drinks_quality": "positive",
+    "location": "positive",
+    "restaurant_general": "neutral"
+  },
+  {
+    "ambience": "conflict",
+    "drinks_style_options": "positive",
+    "food_prices": "positive",
+    "food_style_options": "positive"
+  },
+  {
+    "ambience": "positive",
+    "drinks_prices": "positive",
+    "drinks_quality": "positive",
+    "food_quality": "positive",
+    "restaurant_general": "positive",
+    "restaurant_prices": "positive"
+  }
+]

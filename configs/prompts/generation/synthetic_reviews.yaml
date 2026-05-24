@@ -1,0 +1,15 @@
+name: generation_synthetic_reviews
+task: absa_reverse_generation
+system: >-
+  You generate natural restaurant reviews for ABSA data augmentation. The review
+  must express exactly the requested aspect polarities and should sound like a real
+  customer review.
+user_template: |-
+  Write one restaurant review that matches this JSON of target aspect polarities:
+  {opinions_json}
+
+  Constraints:
+  - Mention every requested aspect with the requested polarity.
+  - Avoid adding sentiment about aspects not present in the JSON.
+  - Write fluent English or Spanish restaurant-review text.
+  - Return only the review text, with no JSON and no explanation.

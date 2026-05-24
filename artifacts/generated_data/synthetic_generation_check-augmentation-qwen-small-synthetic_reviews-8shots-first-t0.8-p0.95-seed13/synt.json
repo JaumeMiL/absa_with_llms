@@ -1,0 +1,256 @@
+[
+  {
+    "id": "synt_13_0000",
+    "language": "synthetic",
+    "text": "A restaurant with a negative location. The food quality was positive.forgettable and the food quality was positive.forgettable and the food quality was positive.forgettable and the food quality was positive.forgettable and the food quality was positive.forgettable and the food quality was positive.forgettable and the food quality was positive.forgettable and the",
+    "gold": {
+      "food_quality": "positive",
+      "location": "negative"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0001",
+    "language": "synthetic",
+    "text": "Negative. Food quality and service are off-putting at this place. I don't think you can go wrong with the food here. You can go wrong with a lot of restaurants. A big part of the negative sentiment is related to the food and service. The service is really bad. It is very long wait",
+    "gold": {
+      "food_quality": "negative",
+      "food_style_options": "negative",
+      "location": "positive",
+      "restaurant_prices": "positive",
+      "service": "negative"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0002",
+    "language": "synthetic",
+    "text": "Waste water treatment plant costs $21.4m. A waste water treatment plant was built by a private company in the city of Weymouth, Massachusetts, costing $21.4 million to install and to operate. The plant will treat 54 million gallons of water per day. -- Bingham",
+    "gold": {
+      "drinks_prices": "negative",
+      "food_prices": "conflict",
+      "food_quality": "negative",
+      "food_style_options": "positive",
+      "location": "negative",
+      "restaurant_prices": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0003",
+    "language": "synthetic",
+    "text": "Very good service, drink quality and drink prices. Very good prices. Very good service. Drinks were fine. Drinks were fine and very good service. Drinks were fine. Drinks were very good. Drinks were very good and fine. Drinks were great. Drinks were great and very good. Drinks were excellent. Drinks were excellent",
+    "gold": {
+      "drinks_prices": "positive",
+      "drinks_quality": "positive",
+      "location": "positive",
+      "service": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0004",
+    "language": "synthetic",
+    "text": "This restaurant is for the adventurous, looking for a night out with friends. The ambience is a little bit dark with a great view. The food is good but not great - maybe too expensive. The drinks were good but not great. The food was a little bit bland, so could have been better. This restaurant",
+    "gold": {
+      "ambience": "positive",
+      "drinks_style_options": "negative",
+      "food_quality": "positive",
+      "food_style_options": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0005",
+    "language": "synthetic",
+    "text": "The French wine industry has changed a little. The French wine industry's share of total wine sales fell from 17 percent in 1998 to 12.1 percent in 2000, according to the International Federation of Wine and Spirit Associations (FIVS) -- but wine drinkers",
+    "gold": {
+      "drinks_quality": "positive",
+      "food_style_options": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0006",
+    "language": "synthetic",
+    "text": "Good drinks at this restaurant! The food is ok but the service is just average. The drinks are not great. Definitely not good value for money.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable restaurant.forgettable",
+    "gold": {
+      "drinks_style_options": "positive",
+      "food_quality": "positive",
+      "service": "neutral"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0007",
+    "language": "synthetic",
+    "text": "Beer prices are a conflict between \"positive\" and \"negative\". The main concern is that the prices are too high. The drinks-style options also have a negative effect on the overall prices. The food-quality is positive, but the drink prices could be improved.\n鲕\nWrite one restaurant review that matches this JSON of target",
+    "gold": {
+      "drinks_prices": "positive",
+      "drinks_style_options": "negative",
+      "food_quality": "conflict",
+      "restaurant_prices": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0008",
+    "language": "synthetic",
+    "text": "The new service was launched in April with a variety of alcoholic and non-alcoholic beverages. The drinks style is positive and food style is positive.forgettable.forgettable.forgettable.forgettableforgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.",
+    "gold": {
+      "drinks_style_options": "positive",
+      "food_style_options": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0009",
+    "language": "synthetic",
+    "text": "Ambience: positive. Drinks quality: negative. Food prices: positive. Food quality: positive. Location: positive.criptive",
+    "gold": {
+      "ambience": "positive",
+      "drinks_quality": "negative",
+      "food_prices": "positive",
+      "food_quality": "positive",
+      "location": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0010",
+    "language": "synthetic",
+    "text": "The good quality of drinks is evident. The service is also excellent. The food is also very good.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty.forgettable and tasty",
+    "gold": {
+      "drinks_quality": "positive",
+      "food_quality": "positive",
+      "location": "negative",
+      "service": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0011",
+    "language": "synthetic",
+    "text": "It's a good choice for me. I ordered a 34 oz. Coke and a 32 oz. Pepsi. I thought it was a bit spicy and it was good. It had a sweet flavor to it and was good. They had a good variety of drinks at the end of the night and I",
+    "gold": {
+      "drinks_prices": "positive",
+      "restaurant_prices": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0012",
+    "language": "synthetic",
+    "text": "\"Drinks Quality\" is \"positive\". \"Drinks Style Options\" is \"positive\". \"Restaurant General\" is \"positive\".酏\n酏\nWrite one restaurant review that matches this JSON of target aspect polarities:\n{\"drinks_quality\": \"negative\", \"drinks_style_options\": \"negative\", \"restaurant",
+    "gold": {
+      "drinks_quality": "positive",
+      "drinks_style_options": "positive",
+      "restaurant_general": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0013",
+    "language": "synthetic",
+    "text": "This is a conflict between drinks prices and service. Drinks prices are high, and service is not what the customers expect.forgettable --.forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable --forgettable",
+    "gold": {
+      "drinks_prices": "positive",
+      "food_style_options": "negative",
+      "service": "conflict"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0014",
+    "language": "synthetic",
+    "text": "Conflicts on the road - one car in each direction. The owner of a car driven across the road in the opposite direction from the other car, which has just entered the same road. When the driver of the second car sees the driver of the first car and turns on the lights, the first car pulls out of",
+    "gold": {
+      "drinks_quality": "positive",
+      "location": "positive",
+      "restaurant_general": "conflict"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0015",
+    "language": "synthetic",
+    "text": "The drinks style offers are not at all disappointing. The food prices are high for the area and the service was good.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.forgettable.",
+    "gold": {
+      "drinks_style_options": "positive",
+      "food_prices": "positive",
+      "service": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0016",
+    "language": "synthetic",
+    "text": "This review is positive, it's about food quality. The reviews for drinks prices and food prices are negative. The reviews for food quality are positive. The location is positive.forgettable.\nforgettable",
+    "gold": {
+      "drinks_prices": "positive",
+      "food_prices": "positive",
+      "food_quality": "negative",
+      "food_style_options": "positive",
+      "location": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0017",
+    "language": "synthetic",
+    "text": "Tartous -- excellent food. Drinks -- very good. Location -- near the sea. Drinks -- very good. -- Lattakia, Aug 10 - 24 hours.forgettable... -- Tartous, Aug 10 - 24 hours.forgettable... -- Lattakia,",
+    "gold": {
+      "drinks_prices": "positive",
+      "drinks_quality": "positive",
+      "location": "positive",
+      "restaurant_general": "neutral"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0018",
+    "language": "synthetic",
+    "text": "Conflicts may be in the air, but it's also a pretty good meal. The ambience is pretty good, but you'd be hard pressed to find the best bar to go to in town for some great drinks and food. The food prices are very cheap, so don't expect anything fancy. Drinks are more",
+    "gold": {
+      "ambience": "conflict",
+      "drinks_style_options": "positive",
+      "food_prices": "positive",
+      "food_style_options": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  },
+  {
+    "id": "synt_13_0019",
+    "language": "synthetic",
+    "text": "I'm in the mood for a nice restaurant. I went to a nice restaurant and had a nice experience. The food was great and the prices were reasonable. I will definitely recommend this place to everyone.forgettable restaurant in the town.forgettable restaurant in the town.forgettable restaurant in the town.forgettable restaurant in the town",
+    "gold": {
+      "ambience": "positive",
+      "drinks_prices": "positive",
+      "drinks_quality": "positive",
+      "food_quality": "positive",
+      "restaurant_general": "positive",
+      "restaurant_prices": "positive"
+    },
+    "source": "synthetic",
+    "generation_run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13"
+  }
+]

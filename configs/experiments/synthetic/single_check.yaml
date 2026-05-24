@@ -1,0 +1,26 @@
+kind: augmentation
+name: synthetic_generation_check
+# descricio realment no cal tampoc pero bno
+description: Small synthetic generation check :)
+
+output_root: artifacts/generated_data
+count: 20
+generate_reviews: true
+
+model:
+  name: qwen-small
+
+prompt:
+  file: configs/prompts/generation/synthetic_reviews.yaml
+
+few_shot:
+  shots: 8
+  strategy: first
+
+decoding:
+  temperature: 0.8
+  top_p: 0.95
+  max_new_tokens: 64
+
+seed: 13
+

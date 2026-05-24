@@ -1,0 +1,15 @@
+{
+  "run_id": "synthetic_generation_check-augmentation-qwen-small-synthetic_reviews-8shots-first-t0.8-p0.95-seed13",
+  "params": {
+    "task": "augment",
+    "count": 20,
+    "seed": 13,
+    "model": "qwen-small",
+    "prompt": "configs/prompts/generation/synthetic_reviews.yaml",
+    "shots": 8,
+    "shot_strategy": "first",
+    "temperature": 0.8,
+    "top_p": 0.95,
+    "max_new_tokens": 64
+  }
+}
