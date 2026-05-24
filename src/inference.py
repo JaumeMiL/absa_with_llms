@@ -67,11 +67,12 @@ def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens
 
     do_sample = temperature is not None and temperature > 0 # que el meu huggingface es queixa sino
 
+
     generation_kwargs = {
         "max_new_tokens": max_new_tokens,
         "pad_token_id": tokenizer.eos_token_id,
         "do_sample": do_sample,
-        **( {"temperature": temperature, "top_p": top_p} if do_sample else {} ) # es podrien afegir mes arguments suposo
+        **( {"temperature": temperature, "top_p": top_p} if do_sample else {"temperature": None, "top_p": None} ) # es podrien afegir mes arguments suposo
     }
 
     with torch.no_grad():
