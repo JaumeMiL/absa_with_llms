@@ -1,0 +1,30 @@
+id,language,predicted,expected,correct,precision,recall,f1,valid_json,parse_error,invalid_items
+es_cullera_de_boix_48_Anna_2013-02-12,es,0,3,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_bodega-de-chema-la-zaragoza_comment-4372,es,4,4,2,50.0,50.0,50.0,True,,price:positive;style_options:positive;ambiance:neutral
+en_BlueRibbonSushi_478219459,en,4,5,1,25.0,20.0,22.22222222222222,True,,ambiance:neutral
+es_barceloneta_0_Jesus_2015-09-07,es,0,3,0,0.0,0.0,0.0,False,could not parse JSON object,
+en_BlueRibbonSushi_478218524,en,4,6,2,50.0,33.333333333333336,40.0,True,,ambiance:neutral;overall_experience:positive
+es_balmes_rossello_55_DiegoPostigo_2014-01-28,es,8,4,3,37.5,75.0,50.0,True,,ambiance:neutral
+es_balmes_rossello_96_Marivi_2012-02-10,es,0,3,0,0.0,0.0,0.0,True,,servicio:positive;calçotada:positive
+es_cullera_de_boix_114_Meri_2008-03-16,es,0,5,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_cullera_de_boix_90_EvaGonzalez_2011-03-25,es,0,1,0,0.0,0.0,0.0,True,,sorpresa:positive
+es_cafe_kafka_29_Rafael_2013-03-15,es,0,3,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_l_olive_9_Pedro-LuisSantiago_2014-02-02,es,0,4,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_matilde-la-zaragoza_comment-1565,es,0,2,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_cullera_de_boix_72_RicardGrane_2012-02-27,es,0,2,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_bal-donsera-zaragoza_comment-3238,es,4,4,0,0.0,0.0,0.0,True,,price:negative;style_options:neutral;ambiance:neutral
+es_barceloneta_54_MiguelMercadoVidal_2012-06-24,es,4,4,2,50.0,50.0,50.0,True,,ambiance:neutral
+1543345,en,3,3,2,66.66666666666667,66.66666666666667,66.66666666666667,True,,ambiance:neutral
+1561259,en,2,4,1,50.0,25.0,33.333333333333336,True,,staff:negative;hostess:negative;waitress:negative;rude_behavior:neutral;price:negative
+es_l_olive_11_ClaudiaVelutini_2014-01-01,es,0,4,0,0.0,0.0,0.0,False,could not parse JSON object,
+449802,en,2,4,2,100.0,50.0,66.66666666666667,True,,drink_prices:neutral;ambiance:neutral
+es_cafe_kafka_46_Josep_2011-12-23,es,0,4,0,0.0,0.0,0.0,False,could not parse JSON object,
+en_BlueRibbonSushi_478218171,en,4,3,1,25.0,33.333333333333336,28.571428571428573,True,,ambiance:neutral
+es_cullera_de_boix_27_Sandra_2013-12-24,es,0,3,0,0.0,0.0,0.0,False,could not parse JSON object,
+555734,en,10,3,2,20.0,66.66666666666667,30.76923076923077,True,,conflict:neutral
+es_9reinas_58_NuriaCasas_2011-09-17,es,0,2,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_salamanca_19_LuisSoleSole_2014-10-31,es,0,2,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_bal-donsera-zaragoza_comment-2198,es,0,0,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_balmes_rossello_20_RoserFabre_2015-02-01,es,0,3,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_balmes_rossello_94_LluisNavarro_2012-03-14,es,0,3,0,0.0,0.0,0.0,False,could not parse JSON object,
+es_balmes_rossello_58_RaulHervas_2014-01-26,es,0,1,0,0.0,0.0,0.0,False,could not parse JSON object,

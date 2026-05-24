@@ -1,0 +1,33 @@
+{
+  "run_id": "zero_shot_single_llama-zero_shot-qwen-small-test-qnone-t0.0-p1.0-seed13",
+  "params": {
+    "task": "zero_shot",
+    "mode": "zero",
+    "model": "qwen-small",
+    "prompt": "configs/prompts/test.yaml",
+    "split": "devel",
+    "shots": 0,
+    "shot_strategy": "first",
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_new_tokens": 256,
+    "seed": 13,
+    "quantization": "none",
+    "adapter": null,
+    "model_path": null,
+    "limit": null
+  },
+  "model_spec": {
+    "name": "qwen-small",
+    "paths": [
+      "Qwen/Qwen2.5-0.5B-Instruct"
+    ],
+    "reportable": false,
+    "lora_targets": [
+      "q_proj",
+      "v_proj"
+    ],
+    "local_smoke": true,
+    "trust_remote_code": false
+  }
+}

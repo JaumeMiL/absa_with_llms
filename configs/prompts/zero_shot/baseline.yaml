@@ -1,0 +1,32 @@
+name: zero_shot_baseline
+mode: zero_shot
+task: absa_extraction
+system: >-
+  You extract aspect based sentiment from restaurant reviews. Return exactly one
+  valid JSON object and nothing else.
+user_template: |-
+  Read the restaurant review and extract only the aspects that are explicitly evaluated.
+
+  Allowed aspects:
+  - restaurant_general: general opinion about the restaurant
+  - restaurant_prices: price of the restaurant overall
+  - food_quality: quality, taste, freshness, cooking of food
+  - food_prices: price or value of food
+  - food_style_options: presentation, originality, variety, portion size, menu options
+  - drinks_quality: quality of drinks
+  - drinks_prices: price or value of drinks
+  - drinks_style_options: presentation, originality, variety, drink options
+  - ambience: atmosphere, decoration, noise, comfort
+  - service: kindness, promptness, attitude, professionalism
+  - location: position, surroundings, view
+
+  Allowed polarities: positive, negative, neutral, conflict.
+  Use conflict only when the same aspect has both positive and negative evidence.
+  Omit aspects that are not explicitly mentioned.
+  Return a flat JSON dictionary only, for example {{"food_quality":"positive","service":"negative"}}.
+
+  Review id: {id}
+  Language: {language}
+  Review:
+  {text}
+

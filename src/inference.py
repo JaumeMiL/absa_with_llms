@@ -114,10 +114,10 @@ def generate(model, tokenizer, input_ids):
 
 
 # NOSE SI POSAR-LO AQUI O EN UN COMMON / BUILDERS o algo aixi pero bno
-def load_model_and_tokenizer(model_name, quantization, adapter = None, device = "cpu", model_path = None):
+def load_model_and_tokenizer(model_name, quantization, adapter = None, device = "auto", model_path = None):
     # Bno aqui hauria de fer lo de la funcio de baix de load_model xd
 
-    model_path = resolve_model_path(model_name)
+    model_path = resolve_model_path(model_name, model_path)
     spec = get_model_spec(model_name)
     kwargs = {
         "trust_remote_code": spec.trust_remote_code,

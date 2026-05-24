@@ -4,10 +4,11 @@
 kind: inference
 name: zero_shot_single_llama
 
+split: devel
 output: ABSA/runs
 
 model:
-  name: llama32B3
+  name: qwen-small
   quantization: none
 
 prompt:
