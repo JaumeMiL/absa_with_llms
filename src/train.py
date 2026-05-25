@@ -114,11 +114,10 @@ def _training_arguments(output_dir, args):
         "save_strategy": "epoch",
         "logging_strategy": "epoch",
         "label_names": ["labels"],
-        "logging_dir": str(output_dir.parent / "tensorboard"),
         "bf16": args["bf16"],
         "fp16": args["fp16"],
         "seed": args["seed"],
-        "report_to": ["tensorboard"],
+        "report_to": [],
     }
     try:
         return TrainingArguments(**kwargs, eval_strategy="epoch")
