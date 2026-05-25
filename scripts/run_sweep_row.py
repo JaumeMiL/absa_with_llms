@@ -20,7 +20,7 @@ def main():
 
     config = load_matrix_row(args.jsonl, args.index)
     print(config)
-    # run_dir = run_experiment_config(config)
+    run_dir = run_experiment_config(config)
     return 0
 
 

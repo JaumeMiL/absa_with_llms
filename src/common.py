@@ -2,11 +2,65 @@ import json
 import torch
 import yaml
 from pathlib import Path
-from constants import PROMPT_DIR, resolve_path
+from constants import PROMPT_DIR, resolve_path, ARTIFACTS_DIR, ensure_dir
 from typing import Any
 import copy
 import itertools
 
+def set_nested(data, dotted, value): # es com el read nested pero al reves
+    current = data
+    parts = dotted.split(".")
+    for part in parts[:-1]:
+        current = current.setdefault(part, {})
+    current[parts[-1]] = value
+
+def as_list(value):
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+def expand_matrix(config): 
+    matrix = dict(config.get("matrix", {})) # pilla del config lo q hi hagi a matrix
+    seeds = config.get("seeds")
+    if seeds is not None and "seed" not in matrix:
+        matrix["seed"] = seeds
+    if not matrix:
+        return [copy.deepcopy(config)]
+
+    keys = list(matrix)
+    values = [as_list(matrix[key]) for key in keys]
+    rows = []
+    for combo in itertools.product(*values): # pilla el config, i fa un itertools de totes les combinacions possibles de values i a més, x seeds
+        row = copy.deepcopy(config)
+        row.pop("matrix", None)
+        row.pop("seeds", None)
+        for key, value in zip(keys, combo): # fa el combo
+            set_nested(row, key, value)
+        rows.append(row)
+    return rows
+
+def expand_experiment_config(path_or_config):
+    config = load_config(path_or_config) if not isinstance(path_or_config, dict) else dict(path_or_config)
+    return expand_matrix(config)
+
+def load_matrix_row(jsonl_path, index): # llegeix el jsonl generat per expand matrix la linia especifica
+    rows = [line for line in Path(jsonl_path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    return json.loads(rows[index])
+
+
+def write_expanded_matrix(config_path, output_path = None):
+    rows = expand_experiment_config(config_path) # pilla les rows de l'expanded matrix i les escriu a un jsonl, cada linia es un config diferent
+    if output_path is None:
+        output_path = ARTIFACTS_DIR / "sweeps" / (Path(config_path).stem + ".jsonl")
+    output_path = Path(output_path)
+    ensure_dir(output_path.parent)
+    with output_path.open("w", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+    return output_path
 
 def prompt_label(prompt_file):
     path = Path(prompt_file)
