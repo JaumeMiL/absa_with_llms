@@ -18,6 +18,13 @@ CONFIG="${1:-configs/experiments/few_shot/single_run.yaml}"
 
 cd "$SLURM_SUBMIT_DIR"
 
+RUN_USER="${USER:-$(whoami)}"
+if [[ "$RUN_USER" == "mgl1013" ]]; then
+  export ABSA_RUN_NAME_SUFFIX="mgl1013"
+else
+  export ABSA_RUN_NAME_SUFFIX="mgl1008"
+fi
+
 # activate virtual environment with needed python modules
 source /scratch/nas/1/PDI/mml0/MML.venv/bin/activate
 

@@ -1,4 +1,5 @@
 import argparse
+import os
 from _bootstrap import ABSA_ROOT
 from common import load_config
 from experiments import run_experiment_config
@@ -11,6 +12,9 @@ def main():
     args = parser.parse_args()
 
     config = load_config(args.config)
+    run_name_suffix = os.environ.get("ABSA_RUN_NAME_SUFFIX")
+    if run_name_suffix:
+        config["run_name_suffix"] = run_name_suffix
     run_dir = run_experiment_config(config)
     print(run_dir)
     return 0

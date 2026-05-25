@@ -93,6 +93,9 @@ def _run_name(config, task, prompt_file = None):
     seed = get_nested(config, "seed")
     model = get_nested(config, "model.name", "model")
     pieces = [name, task, model]
+    suffix = config.get("run_name_suffix")
+    if suffix:
+        pieces.insert(1, suffix)
     if prompt_file:
         pieces.append(prompt_label(prompt_file))
     quantization = get_nested(config, "model.quantization")
