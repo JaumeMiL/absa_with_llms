@@ -1,0 +1,8 @@
+{
+  "source_file": "/Users/jaumemil/Downloads/synthetic_absa_1000_gpt5.5.json",
+  "generator_model": "gpt-5.5",
+  "synthetic_examples": 1000,
+  "train_examples": 1056,
+  "train_plus_synth_examples": 2056,
+  "notes": "Synthetic ABSA reviews generated from target aspect-polarity JSON examples using few-shot prompting."
+}
