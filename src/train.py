@@ -34,18 +34,29 @@ def _ensure_chat_template(tokenizer):
 # DFDSAFASDFA HAURIA DE SER LA MATEIXA QUE LOAD MODEL AND TOKENIZER SEGURAMENT! PASSA QUE
 # AQUELLA NO TE SUPORT PER LORA PARAMETRES
 def load_training_model_and_tokenizer(model_name, model_path_override, quantization, lora_r, lora_alpha, lora_dropout):
-    # TODO: quantization
     spec = get_model_spec(model_name)
     model_path = resolve_model_path(model_name, model_path_override)
 
     kwargs: dict[str, Any] = {"trust_remote_code": spec.trust_remote_code}
 
-    kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_available() and not spec.local_smoke else torch.float32
-
-    # FIX: Explicitly map to CPU if CUDA is not available
-    kwargs["device_map"] = "auto" if torch.cuda.is_available() else {"": "cpu"}
+    if quantization == "4bit":
+        kwargs["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+        )
+        kwargs["device_map"] = "auto"
+    else:
+        kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_available() and not spec.local_smoke else torch.float32
+        kwargs["device_map"] = "auto" if torch.cuda.is_available() else {"": "cpu"}
 
     model = AutoModelForCausalLM.from_pretrained(model_path, **kwargs)
+    model.config.use_cache = False
+    if quantization == "4bit":
+        model = prepare_model_for_kbit_training(model)
+    if hasattr(model, "gradient_checkpointing_enable"):
+        model.gradient_checkpointing_enable()
 
     lora_config = LoraConfig(
         r=lora_r,
