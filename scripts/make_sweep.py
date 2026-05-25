@@ -1,7 +1,7 @@
 import argparse
 
 from _bootstrap import ABSA_ROOT
-from experiments import expand_experiment_config, write_expanded_matrix
+from common import expand_experiment_config, write_expanded_matrix
 
 
 def main():
