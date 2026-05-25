@@ -1,2 +1,7 @@
 __pycache__
 tensorboard
+logs
+runs
+artifacts
+*.jsonl
+*.save
