@@ -16,10 +16,10 @@ user_template: |
   Analyze the text and extract the aspects and polarities. Output a JSON object containing only the mapped keys and values.
   
   ### EXPECTED JSON SCHEMA:
-  {
-  \"<aspect_1>\": \"<polarity>\",
-  \"<aspect_2>\": \"<polarity>\"
-  }
+  {{
+    "<aspect_1>": "<polarity>",
+    "<aspect_2>": "<polarity>"
+  }}
 
   ### TEXT:
-  {text}
+  {{text}}
