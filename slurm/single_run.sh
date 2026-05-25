@@ -17,6 +17,13 @@ fi
 
 cd "$SLURM_SUBMIT_DIR"
 
+RUN_USER="${USER:-$(whoami)}"
+if [[ "$RUN_USER" == "mgl1013" ]]; then
+  export ABSA_RUN_NAME_SUFFIX="mgl1013"
+else
+  export ABSA_RUN_NAME_SUFFIX="mgl1008"
+fi
+
 source /scratch/nas/1/PDI/mml0/MML.venv/bin/activate
 python3 scripts/run_experiment.py "$1"
 deactivate

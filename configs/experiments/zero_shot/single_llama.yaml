@@ -12,7 +12,7 @@ model:
   quantization: none
 
 prompt:
-  file: configs/prompts/test.yaml
+  file: configs/prompts/zero_shot/my_prompt.yaml
 
 few_shot:
   shots: 0
