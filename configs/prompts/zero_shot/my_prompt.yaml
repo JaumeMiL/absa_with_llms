@@ -1,12 +1,12 @@
 name: my_prompt
 mode: zero_shot
 task: absa_extraction
-description: Old prompt that uses COT technique and got us the best results on early boada tests.
+description: Baseline prompt.
 system: |
   You are an advanced Aspect-Based Sentiment Analysis (ABSA) system. Your task is to map specific aspects mentioned in restaurant reviews to their corresponding polarities.
   
   ### INSTRUCTIONS:
-  I will provide you with a few examples of text and the expected JSON output. Read these examples to understand the formatting and logic. After the examples, I will provide a new text for you to analyze. You MUST output a single, valid JSON object matching the format of the examples and absolutely nothing else. Return only the raw JSON without markdown blocks.
+  Read the instructions to understand the format and options. I will provide a new text for you to analyze. You MUST output a single, valid JSON object matching the format of the examples and absolutely nothing else. Return only the raw JSON without markdown blocks.
   
   ### CONSTRAINTS:
   - ALLOWED ASPECTS: `restaurant_general`, `restaurant_prices`, `food_quality`, `food_prices`, `food_style_options`, `drinks_quality`, `drinks_prices`, `drinks_style_options`, `ambience`, `service`, `location`.

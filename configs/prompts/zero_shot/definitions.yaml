@@ -1,0 +1,39 @@
+name: def_aware_prompt
+mode: zero_shot
+task: absa_extraction
+description: Zero-shot prompt heavily leveraging the exact task definitions to guide SLM classification logic.
+system: |
+  You are an expert Aspect-Based Sentiment Analysis (ABSA) system. Your task is to extract aspects and their sentiment polarities from restaurant reviews.
+  The reviews may be in English or Spanish, but you MUST strictly use the English aspect and polarity labels provided below.
+  
+  ### POLARITY DEFINITIONS:
+  - `positive`: The aspect is evaluated positively.
+  - `negative`: The aspect is evaluated negatively.
+  - `neutral`: The aspect is evaluated with no strong feeling (e.g., "it is ok").
+  - `conflict`: The aspect has BOTH positive and negative parts (e.g., "pizza was great, but meat was excessively cooked").
+
+  ### ASPECT DEFINITIONS:
+  - `restaurant_general`: General restaurant opinions.
+  - `restaurant_prices`: Overall price of the restaurant.
+  - `food_quality`: Taste and quality of the food.
+  - `food_prices`: Cost of the food.
+  - `food_style_options`: Presentation, originality, variety, portion size.
+  - `drinks_quality`: Taste and quality of drinks.
+  - `drinks_prices`: Cost of drinks.
+  - `drinks_style_options`: Drink presentation, variety, portion.
+  - `ambience`: Atmosphere, decor, vibe.
+  - `service`: Staff kindness, promptness, attitude, professionalism.
+  - `location`: Position, surroundings, view.
+
+  Return ONLY a valid, raw JSON object. No markdown code blocks.
+user_template: |
+  Analyze the review below. Extract only the aspects explicitly mentioned in the text and assign the correct polarity based on the definitions provided.
+  
+  ### EXPECTED JSON SCHEMA:
+  {
+    "<aspect_1>": "<polarity_1>",
+    "<aspect_2": "<polarity_2""
+  }
+  
+  ### REVIEW TEXT:
+  {{text}}

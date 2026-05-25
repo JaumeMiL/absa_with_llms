@@ -21,16 +21,17 @@ few_shot:
 decoding:
   temperature: 0.0
   top_p: 1.0
-  max_new_tokens: 128
+  max_new_tokens: 512
 
-seeds: [13, 37, 101]
+seeds: [13]
 
 matrix:
   model.name: [llama32B3, qwen25B3]
-  model.quantization: [none] # 4 bit
+  model.quantization: [none, 4 bit]
   prompt.file:
-    - configs/prompts/zero_shot/baseline.yaml
-    - configs/prompts/zero_shot/strict_json.yaml
-    - configs/prompts/zero_shot/bilingual.yaml
-  decoding.temperature: [0.0, 0.2]
-  decoding.top_p: [1.0, 0.9]
+    - configs/prompts/zero_shot/negative.yaml
+    - configs/prompts/zero_shot/definitions.yaml
+    - configs/prompts/zero_shot/my_prompt.yaml
+    - configs/prompts/zero_shot/cot.yaml
+  decoding.temperature: [0.0]
+  decoding.top_p: [1.0]
