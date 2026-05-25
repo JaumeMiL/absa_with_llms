@@ -1,0 +1,38 @@
+kind: inference
+name: few_shot_sweep
+description: Few-shot comparison across reportable models, extraction prompts, seeds, and optional 4-bit loading.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+
+prompt:
+  file: configs/prompts/few_shot/my_prompt.yaml
+
+few_shot:
+  shots: 1
+  strategy: first
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+
+seeds: [13]
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none, 4 bit]
+  few_shot.shots: [1, 2, 5, 10]
+  few_shot.strategy: [first, random, diverse]
+  prompt.file:
+    - configs/prompts/few_shot/my_prompt.yaml
+    - configs/prompts/few_shot/cot.yaml
+  decoding.temperature: [0.0]
+  decoding.top_p: [1.0]
+

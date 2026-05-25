@@ -5,7 +5,7 @@
 #SBATCH --gres=gpu:rtx3080:1
 #SBATCH -c 2
 #SBATCH --mem=48Gb
-#SBATCH --time=04:00:00
+#SBATCH --time=08:00:00
 #SBATCH --output=logs/slurm/%x-%j.out
 #SBATCH --error=logs/slurm/%x-%j.err
 
