@@ -1,0 +1,30 @@
+kind: inference
+name: finetune_llama_train_only_decoding
+description: Decode-temperature/top-p sweep for a trained Llama train-only adapter. Replace model.adapter after training.
+
+split: devel
+output_root: runs
+
+model:
+  name: llama32B3
+  quantization: 4bit
+  device: auto
+  adapter: runs/finetune/finetune_llama_lora_train_only-mgl1013-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep3-seed13/adapter
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+few_shot:
+  shots: 0
+  strategy: first
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+
+seed: 13
+
+matrix:
+  decoding.temperature: [0.0, 0.2, 0.5]
+  decoding.top_p: [1.0, 0.9, 0.5]
