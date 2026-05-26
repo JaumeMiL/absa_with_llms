@@ -7,6 +7,7 @@ output: runs
 model:
   name: llama32B3
   quantization: 4bit
+  device: auto
   adapter: runs/finetune/finetune_llama_lora_gpt55_synth-mgl1013-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep3-seed13/adapter
 
 prompt:

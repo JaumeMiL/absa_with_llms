@@ -8,6 +8,7 @@ model:
   name: llama32B3
   path:
   quantization: 4bit
+  device: auto
 
 prompt:
   file: configs/prompts/zero_shot/my_prompt.yaml

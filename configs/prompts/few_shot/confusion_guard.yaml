@@ -1,0 +1,43 @@
+name: confusion_guard_few_shot
+mode: few_shot
+task: absa_extraction
+description: Few-shot prompt that keeps demonstrations but adds strict aspect-confusion rules.
+system: |-
+  You are a precise ABSA extractor for English and Spanish restaurant reviews.
+  You will see a few user/assistant examples before the target review.
+  Follow the examples' flat JSON format exactly.
+  Return exactly one valid flat JSON object and nothing else.
+user_template: |-
+  Extract aspect polarities from the review.
+
+  Output format:
+  - A flat JSON dictionary only: {{"aspect": "polarity"}}
+  - Include only aspects with explicit evidence in the review.
+  - Use only these polarities: positive, negative, neutral, conflict.
+  - Use conflict only when the same aspect has both positive and negative evidence.
+  - If no aspect is explicitly evaluated, return {{}}.
+
+  Aspect rules:
+  - restaurant_general: overall recommendation, overall satisfaction, hype, "place", "sitio", "restaurante".
+  - restaurant_prices: overall restaurant price, bill, value, expensive/cheap when not tied to one item.
+  - food_quality: taste, cooking, freshness, delicious/bland/cold food.
+  - food_prices: price or value of dishes, menu, food portions for the money.
+  - food_style_options: variety, menu options, presentation, originality, portion size.
+  - drinks_quality: taste or quality of wine, cocktails, beer, coffee, drinks.
+  - drinks_prices: price or value of drinks.
+  - drinks_style_options: drink variety, presentation, sizes, options.
+  - ambience: atmosphere, decoration, comfort, noise, music, cleanliness, crowding.
+  - service: staff, waiters, friendliness, speed, waiting, reservations, professionalism.
+  - location: centrality, neighborhood, surroundings, access, views.
+
+  Frequent mistakes to avoid:
+  - Generic praise is restaurant_general, not food_quality, unless food is named.
+  - Central, near, neighborhood, and views are location, not ambience.
+  - Decoration, noise, comfort, and vibe are ambience, not location.
+  - Dish/menu price is food_prices; overall bill/value is restaurant_prices.
+  - Mention service only when staff, waiting, attention, reservation, or speed is evaluated.
+
+  Review id: {{id}}
+  Language: {{language}}
+  Review:
+  {{text}}
