@@ -106,6 +106,9 @@ def run_augmentation(
         count = 1000,
         seed = 42,
         model_name = "llama32B3",
+        model_path = None,
+        quantization = "none",
+        device = "auto",
         prompt_name = "generation/synthetic_reviews",
         output_root = GENERATED_DIR,
         run_name = None,
@@ -125,6 +128,9 @@ def run_augmentation(
         "count": count,
         "seed": seed,
         "model": model_name,
+        "model_path": model_path,
+        "quantization": quantization,
+        "device": device,
         "prompt": prompt_name,
         "shots": shots,
         "shot_strategy": shot_strategy,
@@ -152,8 +158,13 @@ def run_augmentation(
     prompt = load_prompt(prompt_name)
     train = load_dataset("train")
     shot_examples = select_shots(train, shots, strategy=shot_strategy, seed=seed)
-    logger.log("Loading generation model", model=model_name, shots=len(shot_examples))
-    model, tokenizer = load_model_and_tokenizer(model_name, quantization="none")
+    logger.log("Loading generation model", model=model_name, quantization=quantization, device=device, shots=len(shot_examples))
+    model, tokenizer = load_model_and_tokenizer(
+        model_name,
+        quantization=quantization,
+        model_path=model_path,
+        device=device,
+    )
     logger.log("Generation model loaded")
 
 
