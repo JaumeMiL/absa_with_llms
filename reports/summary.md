@@ -1,177 +1,68 @@
 # ABSA Experiment Summary
 
-| task | model | prompt | shots | temp | top_p | seed | macro F1 | micro F1 |
-|---|---|---|---:|---:|---:|---:|---:|---:|
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 70.91 | 71.80 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 70.91 | 71.80 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 70.65 | 71.11 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 70.65 | 71.11 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 69.48 | 70.64 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 69.48 | 70.64 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 68.24 | 71.75 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 68.24 | 71.75 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 67.84 | 70.25 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 67.84 | 70.25 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 67.27 | 70.91 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 67.27 | 70.91 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 66.98 | 72.01 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 66.98 | 72.01 |
-| few_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 8 | 0.0 | 1.0 | 13 | 66.91 | 70.47 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 66.72 | 68.39 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 66.72 | 68.39 |
-| few_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 8 | 0.0 | 1.0 | 13 | 66.59 | 69.46 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 66.58 | 69.13 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 66.58 | 69.13 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 66.28 | 71.72 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 66.28 | 71.72 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 65.35 | 66.59 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 65.35 | 66.59 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 65.27 | 68.51 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 65.27 | 68.51 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 64.87 | 65.38 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 64.87 | 65.38 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 64.40 | 66.30 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 64.40 | 66.30 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 64.09 | 63.29 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 64.09 | 63.29 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 63.99 | 66.58 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 63.99 | 66.58 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 63.35 | 66.58 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 63.35 | 66.58 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 62.89 | 63.76 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 62.89 | 63.76 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 62.82 | 62.17 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 62.82 | 62.17 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 62.56 | 60.69 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 62.56 | 60.69 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 61.95 | 66.51 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 61.95 | 66.51 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 61.88 | 67.96 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 61.88 | 67.96 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 60.81 | 66.25 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 60.81 | 66.25 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 60.71 | 65.67 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 60.71 | 65.67 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 60.47 | 61.98 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 60.47 | 61.98 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 59.96 | 62.43 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 59.96 | 62.43 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 59.66 | 62.98 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 59.66 | 62.98 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 59.24 | 62.59 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 59.24 | 62.59 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 59.01 | 60.80 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 59.01 | 60.80 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 58.80 | 61.40 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 58.80 | 61.40 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 58.73 | 68.45 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 58.73 | 68.45 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 57.95 | 58.84 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 57.95 | 58.84 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 57.71 | 55.81 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 57.71 | 55.81 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 56.61 | 60.84 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 56.61 | 60.84 |
-| few_shot | llama32B3 | configs/prompts/zero_shot/baseline.yaml | 8 | 0.0 | 1.0 | 13 | 56.32 | 64.71 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 56.04 | 61.58 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 1 | 0.0 | 1.0 | 13 | 56.04 | 61.58 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 55.92 | 64.52 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 55.92 | 64.52 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 55.84 | 57.46 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 55.84 | 57.46 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 55.23 | 56.93 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 55.23 | 56.93 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 53.77 | 53.65 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 53.77 | 53.65 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 53.75 | 59.93 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 2 | 0.0 | 1.0 | 13 | 53.75 | 59.93 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 53.22 | 62.34 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 53.22 | 62.34 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 52.49 | 54.29 |
-| few_shot | llama32B3 | configs/prompts/few_shot/my_prompt.yaml | 10 | 0.0 | 1.0 | 13 | 52.49 | 54.29 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 52.09 | 60.50 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 52.09 | 60.50 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 51.38 | 61.60 |
-| few_shot | qwen25B3 | configs/prompts/few_shot/my_prompt.yaml | 5 | 0.0 | 1.0 | 13 | 51.38 | 61.60 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 48.91 | 51.71 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 10 | 0.0 | 1.0 | 13 | 48.91 | 51.71 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 48.69 | 49.86 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 1 | 0.0 | 1.0 | 13 | 48.69 | 49.86 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 47.53 | 49.40 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 5 | 0.0 | 1.0 | 13 | 47.53 | 49.40 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 47.28 | 47.50 |
-| few_shot | llama32B3 | configs/prompts/few_shot/cot.yaml | 2 | 0.0 | 1.0 | 13 | 47.28 | 47.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 76.29 | 77.34 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 72.71 | 73.67 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/cot.yaml | 0 | 0.0 | 1.0 | 13 | 63.44 | 61.14 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/cot.yaml | 0 | 0.0 | 1.0 | 13 | 63.44 | 61.14 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/cot.yaml | 0 | 0.0 | 1.0 | 13 | 61.65 | 61.69 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/cot.yaml | 0 | 0.0 | 1.0 | 13 | 61.65 | 61.69 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/cot.yaml | 0 | 0.0 | 1.0 | 13 | 58.33 | 60.07 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.5 | 13 | 55.33 | 55.99 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.9 | 13 | 55.33 | 57.82 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.9 | 13 | 55.31 | 55.75 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.5 | 42 | 55.10 | 55.58 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.9 | 101 | 55.10 | 57.70 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 1.0 | 13 | 55.07 | 56.69 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.5 | 101 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.5 | 13 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.5 | 42 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.9 | 101 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.9 | 13 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.9 | 42 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 101 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 13 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 42 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 13 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 13 | 55.04 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.5 | 42 | 54.88 | 57.46 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.9 | 42 | 54.88 | 59.14 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 1.0 | 42 | 54.87 | 56.80 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.5 | 101 | 54.76 | 56.59 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.5 | 101 | 54.74 | 54.74 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.5 | 13 | 54.71 | 57.00 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.5 | 101 | 54.62 | 57.21 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.5 | 13 | 54.62 | 57.21 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 1.0 | 42 | 54.54 | 56.58 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.5 | 101 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.5 | 13 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.5 | 42 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.9 | 101 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.9 | 13 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 0.9 | 42 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 101 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 13 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 42 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 13 | 54.44 | 55.50 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.0 | 1.0 | 13 | 54.44 | 55.50 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.5 | 42 | 54.37 | 56.76 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.9 | 42 | 54.32 | 56.72 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.5 | 13 | 54.21 | 55.03 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 1.0 | 101 | 54.12 | 56.04 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.5 | 42 | 53.70 | 54.23 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.5 | 101 | 53.61 | 54.23 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 1.0 | 13 | 53.58 | 56.86 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.9 | 42 | 53.56 | 55.10 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 1.0 | 101 | 53.53 | 56.45 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.9 | 42 | 53.52 | 55.85 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.9 | 101 | 53.51 | 56.23 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 1.0 | 42 | 52.97 | 55.62 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 1.0 | 101 | 52.87 | 53.38 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.9 | 101 | 52.83 | 55.62 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 1.0 | 13 | 52.77 | 53.90 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.9 | 13 | 52.68 | 54.18 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 1.0 | 13 | 52.67 | 54.78 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 52.56 | 55.05 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 52.56 | 55.05 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 52.50 | 49.60 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 1.0 | 101 | 52.28 | 54.46 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 0.9 | 101 | 52.15 | 54.11 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.5 | 0.9 | 13 | 52.04 | 54.89 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/negative.yaml | 0 | 0.0 | 1.0 | 13 | 50.82 | 49.90 |
-| zero_shot | qwen25B3 | configs/prompts/zero_shot/negative.yaml | 0 | 0.0 | 1.0 | 13 | 50.82 | 49.90 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/definitions.yaml | 0 | 0.2 | 1.0 | 42 | 50.80 | 52.78 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 49.89 | 47.99 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/my_prompt.yaml | 0 | 0.0 | 1.0 | 13 | 49.89 | 47.99 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/negative.yaml | 0 | 0.0 | 1.0 | 13 | 38.53 | 39.51 |
-| zero_shot | llama32B3 | configs/prompts/zero_shot/negative.yaml | 0 | 0.0 | 1.0 | 13 | 38.53 | 39.51 |
+## Coverage
+
+| task | runs |
+|---|---:|
+| few_shot | 51 |
+| finetune_eval | 2 |
+| finetune_train | 2 |
+| zero_shot | 64 |
+
+## Best Individual Runs
+
+| task | model | prompt | shots | strategy | quant | seed | macro F1 | micro F1 |
+|---|---|---|---:|---|---|---:|---:|---:|
+| finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 76.29 | 77.34 |
+| finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 72.71 | 73.67 |
+| few_shot | llama32B3 | cot | 5 | random | none | 13 | 70.91 | 71.80 |
+| few_shot | llama32B3 | my_prompt | 5 | random | none | 13 | 70.65 | 71.11 |
+| few_shot | llama32B3 | cot | 10 | random | none | 13 | 69.48 | 70.64 |
+| few_shot | llama32B3 | my_prompt | 10 | first | none | 13 | 68.24 | 71.75 |
+| few_shot | llama32B3 | my_prompt | 10 | random | none | 13 | 67.84 | 70.25 |
+| few_shot | llama32B3 | cot | 10 | first | none | 13 | 67.27 | 70.91 |
+| few_shot | qwen25B3 | cot | 10 | random | none | 13 | 66.98 | 72.01 |
+| few_shot | llama32B3 | my_prompt | 8 | first | none | 13 | 66.91 | 70.47 |
+| few_shot | qwen25B3 | cot | 2 | random | none | 13 | 66.72 | 68.39 |
+| few_shot | llama32B3 | my_prompt | 8 | first | none | 13 | 66.59 | 69.46 |
+| few_shot | qwen25B3 | cot | 10 | first | none | 13 | 66.58 | 69.13 |
+| few_shot | qwen25B3 | my_prompt | 10 | random | none | 13 | 66.28 | 71.72 |
+| few_shot | qwen25B3 | cot | 5 | random | none | 13 | 65.35 | 66.59 |
+| few_shot | qwen25B3 | my_prompt | 2 | random | none | 13 | 65.27 | 68.51 |
+| few_shot | llama32B3 | my_prompt | 2 | first | none | 13 | 64.87 | 65.38 |
+| few_shot | llama32B3 | cot | 5 | first | none | 13 | 64.40 | 66.30 |
+| few_shot | llama32B3 | my_prompt | 1 | first | none | 13 | 64.09 | 63.29 |
+| few_shot | qwen25B3 | my_prompt | 2 | first | none | 13 | 63.99 | 66.58 |
+
+## Best Seed-Aggregated Settings
+
+| task | model | prompt | shots | strategy | quant | seeds | n | macro F1 mean | std |
+|---|---|---|---:|---|---|---|---:|---:|---:|
+| finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 1 | 76.29 | 0.00 |
+| finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 1 | 72.71 | 0.00 |
+| few_shot | llama32B3 | cot | 5 | random | none | 13 | 1 | 70.91 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 5 | random | none | 13 | 1 | 70.65 | 0.00 |
+| few_shot | llama32B3 | cot | 10 | random | none | 13 | 1 | 69.48 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 10 | first | none | 13 | 1 | 68.24 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 10 | random | none | 13 | 1 | 67.84 | 0.00 |
+| few_shot | llama32B3 | cot | 10 | first | none | 13 | 1 | 67.27 | 0.00 |
+| few_shot | qwen25B3 | cot | 10 | random | none | 13 | 1 | 66.98 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 8 | first | none | 13 | 2 | 66.75 | 0.22 |
+| few_shot | qwen25B3 | cot | 2 | random | none | 13 | 1 | 66.72 | 0.00 |
+| few_shot | qwen25B3 | cot | 10 | first | none | 13 | 1 | 66.58 | 0.00 |
+| few_shot | qwen25B3 | my_prompt | 10 | random | none | 13 | 1 | 66.28 | 0.00 |
+| few_shot | qwen25B3 | cot | 5 | random | none | 13 | 1 | 65.35 | 0.00 |
+| few_shot | qwen25B3 | my_prompt | 2 | random | none | 13 | 1 | 65.27 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 2 | first | none | 13 | 1 | 64.87 | 0.00 |
+| few_shot | llama32B3 | cot | 5 | first | none | 13 | 1 | 64.40 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 1 | first | none | 13 | 1 | 64.09 | 0.00 |
+| few_shot | qwen25B3 | my_prompt | 2 | first | none | 13 | 1 | 63.99 | 0.00 |
+| zero_shot | llama32B3 | cot | 0 | first | none | 13 | 1 | 63.44 | 0.00 |
+
+## Generated Files
+
+- `summary.csv`: one row per run.
+- `summary_by_seed.csv`: same experimental setting aggregated over seeds.
+- `by_task/`: task-specific tables for zero-shot, few-shot, fine-tuning, and fine-tuned evaluation.
+- `details/per_aspect.csv` and `details/per_language.csv`: ABSA-specific error-analysis tables.
+- `plots/`: task-specific plots and report-ready comparisons.
