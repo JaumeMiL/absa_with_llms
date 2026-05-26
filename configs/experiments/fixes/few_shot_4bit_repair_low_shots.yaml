@@ -1,0 +1,35 @@
+kind: inference
+name: repair_few_shot_4bit_low
+description: Rerun old few-shot 4-bit rows for 1/2 shots with canonical 4bit loading.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: 4bit
+  device: auto
+
+prompt:
+  file: configs/prompts/few_shot/my_prompt.yaml
+
+few_shot:
+  shots: 1
+  strategy: first
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 1024
+
+seed: 13
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  few_shot.shots: [1, 2]
+  few_shot.strategy: [first, random, diverse]
+  prompt.file:
+    - configs/prompts/few_shot/my_prompt.yaml
+    - configs/prompts/few_shot/cot.yaml

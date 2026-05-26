@@ -1,21 +1,31 @@
 #! /bin/bash
 #SBATCH -p cuda
-#SBATCH -A cuda
-#SBATCH --qos=cuda3080
+#SBATCH -A cudabig
+#SBATCH --qos=cudabig3080
 #SBATCH --gres=gpu:rtx3080:1
 #SBATCH -c 2
-#SBATCH --mem=48Gb 
+#SBATCH --mem=48Gb
+#SBATCH --time=02:00:00
+#SBATCH --output=logs/slurm/%x-%j.out
+#SBATCH --error=logs/slurm/%x-%j.err
 
+set -euo pipefail
 
-## Use this script to send a job to the cluster with: 
-##   sbatch fewshot.sh 10
+if [[ $# -lt 1 ]]; then
+  echo "Usage: sbatch slurm/finetune-inference.sh configs/experiments/finetune/inference_train_only.yaml"
+  exit 1
+fi
 
-# activate virtual environment with needed python modules
+cd "$SLURM_SUBMIT_DIR"
+mkdir -p logs/slurm
+
+RUN_USER="${USER:-$(whoami)}"
+if [[ "$RUN_USER" == "mgl1013" ]]; then
+  export ABSA_RUN_NAME_SUFFIX="mgl1013"
+else
+  export ABSA_RUN_NAME_SUFFIX="mgl1008"
+fi
+
 source /scratch/nas/1/PDI/mml0/MML.venv/bin/activate
-
-# run the few-shot extractor
-python3 finetune-inference.py $*
-
-# deactivate the virtual environment
+python3 scripts/run_experiment.py "$1"
 deactivate
-

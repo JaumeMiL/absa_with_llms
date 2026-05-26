@@ -1,0 +1,36 @@
+kind: inference
+name: report_few_shot_strategy_check
+description: Smaller report check for first/random/diverse selection using the strongest old shot counts.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/few_shot/cot.yaml
+
+few_shot:
+  shots: 5
+  strategy: random
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+
+seed: 13
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none, 4bit]
+  few_shot.shots: [5, 10]
+  few_shot.strategy: [first, random, diverse]
+  prompt.file:
+    - configs/prompts/few_shot/cot.yaml
+    - configs/prompts/few_shot/confusion_guard.yaml

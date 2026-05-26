@@ -1,0 +1,34 @@
+kind: inference
+name: report_few_shot_new_prompt
+description: Report-quality few-shot random-selection comparison with canonical quantization, three seeds, and 5/10/20/30 shots.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/few_shot/my_prompt.yaml
+
+few_shot:
+  shots: 5
+  strategy: random
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+
+seeds: [13]
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none, 4bit]
+  few_shot.shots: [1, 2, 5, 10]
+  prompt.file:
+    - configs/prompts/few_shot/confusion_guard.yaml

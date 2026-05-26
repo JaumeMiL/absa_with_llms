@@ -17,6 +17,15 @@ if [[ $# -lt 1 ]]; then
 fi
 
 cd "$SLURM_SUBMIT_DIR"
+mkdir -p logs/slurm
+
+RUN_USER="${USER:-$(whoami)}"
+if [[ "$RUN_USER" == "mgl1013" ]]; then
+  export ABSA_RUN_NAME_SUFFIX="mgl1013"
+else
+  export ABSA_RUN_NAME_SUFFIX="mgl1008"
+fi
+
 source /scratch/nas/1/PDI/mml0/MML.venv/bin/activate
 
 # Automatically count the number of lines in the JSONL file
