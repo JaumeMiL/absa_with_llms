@@ -32,25 +32,44 @@ def as_list(value):
         return value
     return [value]
 
+def _drop_expand_keys(row):
+    row.pop("matrix", None)
+    row.pop("seeds", None)
+    row.pop("variants", None)
+    return row
+
+def _apply_variants(rows, variants):
+    if not variants:
+        return rows
+    expanded = []
+    for row in rows:
+        for variant in variants:
+            variant_row = copy.deepcopy(row)
+            for key, value in dict(variant).items():
+                set_nested(variant_row, key, value)
+            expanded.append(variant_row)
+    return expanded
+
 def expand_matrix(config): 
+    variants = config.get("variants")
     matrix = dict(config.get("matrix", {})) # pilla del config lo q hi hagi a matrix
     seeds = config.get("seeds")
     if seeds is not None and "seed" not in matrix:
         matrix["seed"] = seeds
     if not matrix:
-        return [copy.deepcopy(config)]
+        row = _drop_expand_keys(copy.deepcopy(config))
+        return _apply_variants([row], variants)
 
     keys = list(matrix)
     values = [as_list(matrix[key]) for key in keys]
     rows = []
     for combo in itertools.product(*values): # pilla el config, i fa un itertools de totes les combinacions possibles de values i a més, x seeds
         row = copy.deepcopy(config)
-        row.pop("matrix", None)
-        row.pop("seeds", None)
+        _drop_expand_keys(row)
         for key, value in zip(keys, combo): # fa el combo
             set_nested(row, key, value)
         rows.append(row)
-    return rows
+    return _apply_variants(rows, variants)
 
 def expand_experiment_config(path_or_config):
     config = load_config(path_or_config) if not isinstance(path_or_config, dict) else dict(path_or_config)
@@ -96,6 +115,9 @@ def _run_name(config, task, prompt_file = None):
     suffix = config.get("run_name_suffix") or os.environ.get("ABSA_RUN_NAME_SUFFIX")
     if suffix:
         pieces.insert(1, suffix)
+    variant = config.get("variant")
+    if variant:
+        pieces.append(variant)
     if prompt_file:
         pieces.append(prompt_label(prompt_file))
     quantization = get_nested(config, "model.quantization")
@@ -113,10 +135,25 @@ def _run_name(config, task, prompt_file = None):
         pieces.append(f"p{top_p}")
     learning_rate = get_nested(config, "training.learning_rate")
     epochs = get_nested(config, "training.epochs")
+    batch_size = get_nested(config, "training.per_device_train_batch_size")
+    grad_accum = get_nested(config, "training.gradient_accumulation_steps")
+    max_length = get_nested(config, "training.max_length")
+    bf16 = get_nested(config, "training.bf16")
+    fp16 = get_nested(config, "training.fp16")
     if learning_rate is not None:
         pieces.append(f"lr{learning_rate}")
     if epochs is not None:
         pieces.append(f"ep{epochs}")
+    if batch_size is not None:
+        pieces.append(f"bs{batch_size}")
+    if grad_accum is not None:
+        pieces.append(f"ga{grad_accum}")
+    if max_length is not None:
+        pieces.append(f"len{max_length}")
+    if bf16:
+        pieces.append("bf16")
+    if fp16:
+        pieces.append("fp16")
     if seed is not None:
         pieces.append(f"seed{seed}")
     return "-".join(_slug(piece) for piece in pieces if piece)
@@ -158,6 +195,9 @@ def _run_augmentation_config(config):
         count=int(config.get("count", 1000)),
         seed=int(get_nested(config, "seed", 13)),
         model_name=get_nested(config, "model.name", "llama32B3"),
+        model_path=get_nested(config, "model.path"),
+        quantization=normalize_quantization(get_nested(config, "model.quantization", "none")),
+        device=get_nested(config, "model.device", "auto"),
         prompt_name=get_nested(config, "prompt.file", "configs/prompts/generation/synthetic_reviews.yaml"),
         output_root=config.get("output_root", str(ARTIFACTS_DIR / "generated_data")),
         run_name=_run_name(config, "augmentation", get_nested(config, "prompt.file")),

@@ -22,25 +22,46 @@ def as_list(value):
     return [value]
 
 
+def _drop_expand_keys(row):
+    row.pop("matrix", None)
+    row.pop("seeds", None)
+    row.pop("variants", None)
+    return row
+
+
+def _apply_variants(rows, variants):
+    if not variants:
+        return rows
+    expanded = []
+    for row in rows:
+        for variant in variants:
+            variant_row = copy.deepcopy(row)
+            for key, value in dict(variant).items():
+                set_nested(variant_row, key, value)
+            expanded.append(variant_row)
+    return expanded
+
+
 def expand_matrix(config): 
+    variants = config.get("variants")
     matrix = dict(config.get("matrix", {})) # pilla del config lo q hi hagi a matrix
     seeds = config.get("seeds")
     if seeds is not None and "seed" not in matrix:
         matrix["seed"] = seeds
     if not matrix:
-        return [copy.deepcopy(config)]
+        row = _drop_expand_keys(copy.deepcopy(config))
+        return _apply_variants([row], variants)
 
     keys = list(matrix)
     values = [as_list(matrix[key]) for key in keys]
     rows = []
     for combo in itertools.product(*values): # pilla el config, i fa un itertools de totes les combinacions possibles de values i a més, x seeds
         row = copy.deepcopy(config)
-        row.pop("matrix", None)
-        row.pop("seeds", None)
+        _drop_expand_keys(row)
         for key, value in zip(keys, combo): # fa el combo
             set_nested(row, key, value)
         rows.append(row)
-    return rows
+    return _apply_variants(rows, variants)
 
 def expand_experiment_config(path_or_config):
     config = load_config(path_or_config) if not isinstance(path_or_config, dict) else dict(path_or_config)

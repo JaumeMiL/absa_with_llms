@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from constants import normalize_quantization
+from common import expand_experiment_config
 from report import aggregate_by_seed, scan_runs
 
 
@@ -62,3 +63,22 @@ def test_report_aggregates_quantization_aliases_by_seed(tmp_path):
     assert aggregate[0]["quantization"] == "4bit"
     assert aggregate[0]["n_runs"] == 2
     assert aggregate[0]["macro_f1_mean"] == 65.0
+
+
+def test_variants_expand_paired_overrides_without_cartesian_boolean_products():
+    rows = expand_experiment_config(
+        {
+            "kind": "finetune",
+            "training": {"bf16": True, "fp16": False},
+            "variants": [
+                {"variant": "bf16", "training.bf16": True, "training.fp16": False},
+                {"variant": "fp16", "training.bf16": False, "training.fp16": True},
+            ],
+        }
+    )
+
+    assert len(rows) == 2
+    assert rows[0]["variant"] == "bf16"
+    assert rows[0]["training"] == {"bf16": True, "fp16": False}
+    assert rows[1]["variant"] == "fp16"
+    assert rows[1]["training"] == {"bf16": False, "fp16": True}
