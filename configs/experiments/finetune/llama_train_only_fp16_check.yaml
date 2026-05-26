@@ -1,0 +1,46 @@
+kind: finetune
+name: finetune_llama_train_fp16_check
+description: Small non-quantized precision comparison for the original-train Llama LoRA setting. Uses variants to run exactly one bf16 row and one fp16 row.
+
+output_root: runs
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+data:
+  train: train
+  devel: devel
+  synthetic:
+
+training:
+  max_length: 512
+  epochs: 3
+  learning_rate: 0.00002
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  eval_accumulation_steps: 4
+  save_total_limit: 1
+  bf16: false
+  fp16: true
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+
+seed: 13
+
+variants:
+  - variant: bf16
+    training.bf16: true
+    training.fp16: false
+  - variant: fp16
+    training.bf16: false
+    training.fp16: true

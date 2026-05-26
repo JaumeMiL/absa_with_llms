@@ -1,0 +1,44 @@
+kind: finetune
+name: finetune_llama_train_hparam
+description: Focused QLoRA hyperparameter sweep on original train.json. Split into small Slurm batches; each row may take roughly 1-3 hours on RTX 3080 depending on queue, sequence length, and checkpointing overhead.
+
+output_root: runs
+
+model:
+  name: llama32B3
+  path:
+  quantization: 4bit
+  device: auto
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+data:
+  train: train
+  devel: devel
+  synthetic:
+
+training:
+  max_length: 512
+  epochs: 3
+  learning_rate: 0.00002
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  eval_accumulation_steps: 4
+  save_total_limit: 1
+  bf16: true
+  fp16: false
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+
+seed: 13
+
+matrix:
+  training.learning_rate: [0.00001, 0.00002]
+  training.epochs: [2, 3]
+  training.per_device_train_batch_size: [1, 2]
+  training.gradient_accumulation_steps: [4, 8]

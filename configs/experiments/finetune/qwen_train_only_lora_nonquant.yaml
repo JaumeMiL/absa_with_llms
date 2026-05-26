@@ -1,0 +1,38 @@
+kind: finetune
+name: finetune_qwen_lora_train_only
+description: Baseline non-quantized LoRA fine-tuning run for qwen25B3 on original train.json.
+
+output_root: runs
+
+model:
+  name: qwen25B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+data:
+  train: train
+  devel: devel
+  synthetic:
+
+training:
+  max_length: 512
+  epochs: 3
+  learning_rate: 0.00002
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  eval_accumulation_steps: 4
+  save_total_limit: 1
+  bf16: true
+  fp16: false
+
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+
+seed: 13
