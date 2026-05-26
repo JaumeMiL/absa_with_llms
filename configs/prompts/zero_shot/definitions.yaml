@@ -32,7 +32,7 @@ user_template: |
   ### EXPECTED JSON SCHEMA:
   {
     "<aspect_1>": "<polarity_1>",
-    "<aspect_2": "<polarity_2""
+    "<aspect_2>": "<polarity_2>"
   }
   
   ### REVIEW TEXT:

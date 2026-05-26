@@ -10,6 +10,7 @@ model:
   name: llama32B3
   path:
   quantization: none
+  device: auto
 
 prompt:
   file: configs/prompts/zero_shot/baseline.yaml

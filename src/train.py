@@ -8,15 +8,16 @@ from typing import Any
 from data import load_dataset, write_json
 from inference import make_run_id, set_seed
 from logging_utils import RunLogger
-from constants import get_model_spec, resolve_model_path
+from constants import get_model_spec, resolve_model_path, normalize_quantization
 from constants import RUNS_DIR, ensure_dir
 from common import load_prompt, render_extraction_messages
 import torch
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import Dataset
 from transformers import TrainingArguments
 from transformers import Trainer
+from modeling import build_model_load_kwargs
 
 
 def _ensure_chat_template(tokenizer):
@@ -33,25 +34,18 @@ def _ensure_chat_template(tokenizer):
 
 # DFDSAFASDFA HAURIA DE SER LA MATEIXA QUE LOAD MODEL AND TOKENIZER SEGURAMENT! PASSA QUE
 # AQUELLA NO TE SUPORT PER LORA PARAMETRES
-def load_training_model_and_tokenizer(model_name, model_path_override, quantization, lora_r, lora_alpha, lora_dropout):
+def load_training_model_and_tokenizer(model_name, model_path_override, quantization, lora_r, lora_alpha, lora_dropout, device="auto"):
+    quantization = normalize_quantization(quantization)
     spec = get_model_spec(model_name)
     model_path = resolve_model_path(model_name, model_path_override)
 
-    kwargs: dict[str, Any] = {"trust_remote_code": spec.trust_remote_code}
+    kwargs: dict[str, Any] = build_model_load_kwargs(
+        spec,
+        quantization=quantization,
+        device=device,
+    )
 
-    if quantization == "4bit":
-        kwargs["quantization_config"] = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-        )
-        kwargs["device_map"] = "auto"
-    else:
-        kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_available() and not spec.local_smoke else torch.float32
-        kwargs["device_map"] = "auto" if torch.cuda.is_available() else {"": "cpu"}
-
-    model = AutoModelForCausalLM.from_pretrained(model_path, **kwargs)
+    model = AutoModelForCausalLM.from_pretrained(model_path, use_safetensors=True, **kwargs)
     model.config.use_cache = False
     if quantization == "4bit":
         model = prepare_model_for_kbit_training(model)
@@ -194,14 +188,20 @@ def run_training(
     save_total_limit = 2,
     bf16 = True,
     fp16 = False,
+    device = "auto",
 ):
     
+    quantization = normalize_quantization(quantization)
     set_seed(seed)
     try:
         import torch
 
         if bf16 and not torch.cuda.is_available():
             bf16 = False
+        elif bf16 and hasattr(torch.cuda, "is_bf16_supported") and not torch.cuda.is_bf16_supported():
+            bf16 = False
+            if not fp16:
+                fp16 = True
     except Exception:
         pass
 
@@ -214,6 +214,7 @@ def run_training(
         "synthetic_data": synthetic_data,
         "quantization": quantization,
         "model_path": model_path,
+        "device": device,
         "seed": seed,
         "max_length": max_length,
         "epochs": epochs,
@@ -257,6 +258,7 @@ def run_training(
         lora_r=lora_r,
         lora_alpha=lora_alpha,
         lora_dropout=lora_dropout,
+        device=device,
     )
     logger.log("Training model loaded")
     train_dataset = build_training_dataset(tokenizer, train_examples, prompt, max_length=max_length)

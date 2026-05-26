@@ -1,10 +1,9 @@
 
 import os,sys,time,copy,json
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from common import load_prompt, prepare_messages, encode, generate, extract_json
-from constants import resolve_model_path, get_model_spec
+from constants import resolve_model_path, get_model_spec, normalize_quantization
 from data import write_json, load_dataset
 from logging_utils import RunLogger
 from evaluate import save_evaluation, evaluate_examples
@@ -13,6 +12,7 @@ from fewshot import select_shots
 from constants import ensure_dir
 from pathlib import Path
 from common import render_extraction_messages
+from modeling import build_model_load_kwargs, generation_device, model_context_length
 
 # renamed to inference.py :)
 import random
@@ -49,21 +49,41 @@ def make_run_id(task, params):
     return f"{stamp}-{slug}"
 
 def get_device(model):
+    return generation_device(model)
+
+
+def _encode_messages(tokenizer, model, messages):
+    kwargs = {
+        "tokenize": True,
+        "add_generation_prompt": True,
+        "return_tensors": "pt",
+        "truncation": True,
+    }
+    max_length = model_context_length(model, tokenizer)
+    if max_length:
+        kwargs["max_length"] = max_length
     try:
-        device = model.device # vaja suposo q hauria d'anar
-        return device
-    except Exception:
-        pass
-    return "cpu"
+        encoded = tokenizer.apply_chat_template(messages, return_dict=True, **kwargs)
+    except TypeError:
+        input_ids = tokenizer.apply_chat_template(messages, **kwargs)
+        encoded = {
+            "input_ids": input_ids,
+            "attention_mask": torch.ones_like(input_ids),
+        }
+    if isinstance(encoded, torch.Tensor):
+        encoded = {
+            "input_ids": encoded,
+            "attention_mask": torch.ones_like(encoded),
+        }
+    return encoded
 
 def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens):
-    input_ids = tokenizer.apply_chat_template(messages,
-                                              tokenize=True,
-                                              add_generation_prompt=True,
-                                              return_tensors="pt",
-                                              truncation=True,
-                                            max_length=model.config.max_position_embeddings)
-    input_ids = input_ids.to(get_device(model))
+    inputs = _encode_messages(tokenizer, model, messages)
+    device = get_device(model)
+    inputs = {
+        key: value.to(device) if hasattr(value, "to") else value
+        for key, value in inputs.items()
+    }
 
     do_sample = temperature is not None and temperature > 0 # que el meu huggingface es queixa sino
 
@@ -72,13 +92,15 @@ def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens
         "max_new_tokens": max_new_tokens,
         "pad_token_id": tokenizer.eos_token_id,
         "do_sample": do_sample,
-        **( {"temperature": temperature, "top_p": top_p} if do_sample else {"temperature": None, "top_p": None} ) # es podrien afegir mes arguments suposo
     }
+    if do_sample:
+        generation_kwargs["temperature"] = temperature
+        generation_kwargs["top_p"] = top_p
 
     with torch.no_grad():
-        gen_tokens = model.generate(input_ids, **generation_kwargs)
+        gen_tokens = model.generate(**inputs, **generation_kwargs)
     
-    promptlen = len(input_ids[0])
+    promptlen = inputs["input_ids"].shape[-1]
     # decode obtained tokens back into text
     gen_text = tokenizer.decode(gen_tokens[0][promptlen:], skip_special_tokens=True)
     return gen_text
@@ -118,28 +140,15 @@ def generate(model, tokenizer, input_ids):
 def load_model_and_tokenizer(model_name, quantization, adapter = None, device = "auto", model_path = None):
     # Bno aqui hauria de fer lo de la funcio de baix de load_model xd
 
+    quantization = normalize_quantization(quantization)
     model_path = resolve_model_path(model_name, model_path)
     spec = get_model_spec(model_name)
-    kwargs = {
-        "trust_remote_code": spec.trust_remote_code,
-    }
-
-
-    # quantization l'ha fet el chat o sigui que nidea de si esta be
-    if quantization == "4bit":
-        kwargs["quantization_config"] = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-        )
-        kwargs["device_map"] = device
-    else:
-        kwargs["torch_dtype"] = torch.bfloat16 if torch.cuda.is_available() and not spec.local_smoke else torch.float32
-        kwargs["device_map"] = device if torch.cuda.is_available() and not spec.local_smoke else None
+    kwargs = build_model_load_kwargs(spec, quantization=quantization, device=device)
 
     model = AutoModelForCausalLM.from_pretrained(model_path, use_safetensors=True, **kwargs)
     if adapter:
+        from peft import PeftModel
+
         model = PeftModel.from_pretrained(model, adapter)
     model.eval()
 
@@ -175,10 +184,12 @@ def run_inference(
     quantization: str = "none",
     adapter: str | None = None,
     model_path: str | None = None,
+    device: str = "auto",
     limit: int | None = None,
 ):
     set_seed(seed)
-    task = "few_shot" if mode == "few" or shots else "zero_shot"
+    quantization = normalize_quantization(quantization)
+    task = "finetune_eval" if adapter else ("few_shot" if mode == "few" or shots else "zero_shot")
 
     # lo mateix q a syntetic, el dict aquest es per poder passar-ho pel nom fàcil i per poder guardar
     params = {
@@ -196,6 +207,7 @@ def run_inference(
         "quantization": quantization,
         "adapter": adapter,
         "model_path": model_path,
+        "device": device,
         "limit": limit,
     }
 
@@ -224,14 +236,23 @@ def run_inference(
     selected_shots = select_shots(train, shots, strategy=shot_strategy, seed=seed)
     logger.log("Loaded data and prompt", examples=len(examples), shots=len(selected_shots), prompt=prompt.get("_path"))
 
-    logger.log("Loading model", model=model_name, quantization=quantization, adapter=adapter or "")
+    resolved_model_path = resolve_model_path(model_name, model_path)
+    logger.log(
+        "Loading model",
+        model=model_name,
+        model_path=resolved_model_path,
+        quantization=quantization,
+        device=device,
+        adapter=adapter or "",
+    )
     model, tokenizer = load_model_and_tokenizer(
         model_name,
         quantization=quantization,
         adapter=adapter,
         model_path=model_path,
+        device=device,
     )
-    logger.log("Model loaded")
+    logger.log("Model loaded", device_map=str(getattr(model, "hf_device_map", "")), generation_device=str(get_device(model)))
 
     assignment_examples = []
     with (run_dir / "predictions.jsonl").open("w", encoding="utf-8") as jsonl:

@@ -1,0 +1,42 @@
+name: confusion_guard
+mode: zero_shot
+task: absa_extraction
+description: Strict flat-JSON prompt with rules for frequent ABSA aspect confusions.
+system: |-
+  You are a precise ABSA extractor for English and Spanish restaurant reviews.
+  Return exactly one valid flat JSON object and nothing else.
+  Never use markdown, explanations, comments, or a nested "opinions" key.
+user_template: |-
+  Extract aspect polarities from the review.
+
+  Output format:
+  - A flat JSON dictionary only: {{"aspect": "polarity"}}
+  - Include only aspects with explicit evidence in the review.
+  - Use only these polarities: positive, negative, neutral, conflict.
+  - Use conflict only when the same aspect has both positive and negative evidence.
+  - If no aspect is explicitly evaluated, return {{}}.
+
+  Allowed aspects and disambiguation rules:
+  - restaurant_general: overall recommendation, overall satisfaction, hype, "place", "sitio", "restaurante".
+  - restaurant_prices: overall restaurant price, bill, value, expensive/cheap when not tied to one item.
+  - food_quality: taste, cooking, freshness, delicious/bland/cold food.
+  - food_prices: price or value of dishes, menu, food portions for the money.
+  - food_style_options: variety, menu options, presentation, originality, portion size.
+  - drinks_quality: taste or quality of wine, cocktails, beer, coffee, drinks.
+  - drinks_prices: price or value of drinks.
+  - drinks_style_options: drink variety, presentation, sizes, options.
+  - ambience: atmosphere, decoration, comfort, noise, music, cleanliness, crowding.
+  - service: staff, waiters, friendliness, speed, waiting, reservations, professionalism.
+  - location: centrality, neighborhood, surroundings, access, views.
+
+  Frequent mistakes to avoid:
+  - Do not label food_quality from generic praise like "recommended" unless food is mentioned.
+  - Do not label location from "nice place"; use location only for position/surroundings/views.
+  - Do not label ambience from "central" or "near"; that is location.
+  - Do not label restaurant_prices when the review only prices a dish or menu item; use food_prices.
+  - Do not add service unless staff, waiting, attention, reservation, or speed is evaluated.
+
+  Review id: {{id}}
+  Language: {{language}}
+  Review:
+  {{text}}

@@ -10,6 +10,7 @@ output: runs
 model:
   name: llama32B3
   quantization: none
+  device: auto
 
 prompt:
   file: configs/prompts/zero_shot/my_prompt.yaml

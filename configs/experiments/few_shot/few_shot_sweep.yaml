@@ -10,6 +10,7 @@ model:
   name: llama32B3
   path:
   quantization: none
+  device: auto
 
 prompt:
   file: configs/prompts/few_shot/my_prompt.yaml
@@ -27,12 +28,13 @@ seeds: [13]
 
 matrix:
   model.name: [llama32B3, qwen25B3]
-  model.quantization: [none, 4 bit]
+  model.quantization: [none, 4bit]
   few_shot.shots: [1, 2, 5, 10]
   few_shot.strategy: [first, random, diverse]
   prompt.file:
     - configs/prompts/few_shot/my_prompt.yaml
     - configs/prompts/few_shot/cot.yaml
+    - configs/prompts/few_shot/confusion_guard.yaml
   decoding.temperature: [0.0]
   decoding.top_p: [1.0]
 

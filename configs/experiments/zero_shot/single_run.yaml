@@ -10,6 +10,7 @@ output: ABSA/runs
 model:
   name: qwen-small
   quantization: none
+  device: auto
 
 prompt:
   file: configs/prompts/test.yaml
