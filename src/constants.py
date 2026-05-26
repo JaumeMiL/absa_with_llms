@@ -15,6 +15,27 @@ def ensure_dir(path):
     path.mkdir(parents=True, exist_ok=True)
     return path
 
+def normalize_quantization(value):
+    if value is None:
+        return "none"
+    if isinstance(value, bool):
+        return "4bit" if value else "none"
+    normalized = (
+        str(value)
+        .strip()
+        .lower()
+        .replace("-", "")
+        .replace("_", "")
+        .replace(" ", "")
+    )
+    if normalized in {"", "none", "no", "false", "0", "off"}:
+        return "none"
+    if normalized in {"4bit", "4bits", "bnb4bit", "bitsandbytes4bit", "nf4"}:
+        return "4bit"
+    raise ValueError(
+        f"Unsupported quantization value {value!r}. Use 'none' or '4bit'."
+    )
+
 def resolve_path(path, base = None):
     candidate = Path(path)
     if candidate.is_absolute():

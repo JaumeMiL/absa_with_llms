@@ -4,14 +4,14 @@
 # que organitzi basicament
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 from synthetic import run_augmentation
 from common import get_nested, prompt_label
 from inference import run_inference
-from constants import ARTIFACTS_DIR, RUNS_DIR
-from train import run_training
+from constants import ARTIFACTS_DIR, RUNS_DIR, normalize_quantization
 import copy 
 import itertools
 from common import load_config
@@ -93,14 +93,14 @@ def _run_name(config, task, prompt_file = None):
     seed = get_nested(config, "seed")
     model = get_nested(config, "model.name", "model")
     pieces = [name, task, model]
-    suffix = config.get("run_name_suffix")
+    suffix = config.get("run_name_suffix") or os.environ.get("ABSA_RUN_NAME_SUFFIX")
     if suffix:
         pieces.insert(1, suffix)
     if prompt_file:
         pieces.append(prompt_label(prompt_file))
     quantization = get_nested(config, "model.quantization")
     if quantization:
-        pieces.append(f"q{quantization}")
+        pieces.append(f"q{normalize_quantization(quantization)}")
     shots = get_nested(config, "few_shot.shots")
     if shots:
         pieces.append(f"{shots}shots")
@@ -132,6 +132,7 @@ def _run_inference_config(config: dict[str, Any]) -> Path:
     prompt_file = get_nested(config, "prompt.file", "configs/prompts/zero_shot/baseline.yaml")
     shots = int(get_nested(config, "few_shot.shots", 0) or 0)
     mode = "few" if shots else "zero"
+    task_label = "finetune_eval" if get_nested(config, "model.adapter") else ("few_shot" if shots else "zero_shot")
     return run_inference(
         mode=mode,
         model_name=get_nested(config, "model.name", "llama32B3"),
@@ -139,15 +140,16 @@ def _run_inference_config(config: dict[str, Any]) -> Path:
         prompt_name=prompt_file,
         split=config.get("split", "devel"),
         output_root=config.get("output_root", config.get("output", str(RUNS_DIR))),
-        run_name=_run_name(config, "few_shot" if shots else "zero_shot", prompt_file),
+        run_name=_run_name(config, task_label, prompt_file),
         shots=shots,
         shot_strategy=get_nested(config, "few_shot.strategy", "first"),
         temperature=float(get_nested(config, "decoding.temperature", 0.0)),
         top_p=float(get_nested(config, "decoding.top_p", 1.0)),
         max_new_tokens=int(get_nested(config, "decoding.max_new_tokens", 128)),
         seed=int(get_nested(config, "seed", 13)),
-        quantization=get_nested(config, "model.quantization", "none"),
+        quantization=normalize_quantization(get_nested(config, "model.quantization", "none")),
         adapter=get_nested(config, "model.adapter"),
+        device=get_nested(config, "model.device", "auto"),
         limit=config.get("limit"),
     )
 
@@ -169,6 +171,8 @@ def _run_augmentation_config(config):
 
 def _run_finetune_config(config: dict[str, Any]) -> Path:
     # fua igual masses parametres jaja
+    from train import run_training
+
     return run_training(
         model_name=get_nested(config, "model.name", "llama32B3"),
         model_path=get_nested(config, "model.path"),
@@ -178,7 +182,8 @@ def _run_finetune_config(config: dict[str, Any]) -> Path:
         synthetic_data=get_nested(config, "data.synthetic"),
         output_root=config.get("output_root", str(RUNS_DIR)),
         run_name=_run_name(config, "finetune", get_nested(config, "prompt.file")),
-        quantization=get_nested(config, "model.quantization", "none"), # NO EXISTEIX ENCARA
+        quantization=normalize_quantization(get_nested(config, "model.quantization", "none")),
+        device=get_nested(config, "model.device", "auto"),
         seed=int(get_nested(config, "seed", 13)),
         max_length=int(get_nested(config, "training.max_length", 1024)),
         epochs=float(get_nested(config, "training.epochs", 3.0)),
