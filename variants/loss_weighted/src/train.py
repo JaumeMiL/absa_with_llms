@@ -1,0 +1,358 @@
+from __future__ import annotations
+
+import csv
+import json
+from pathlib import Path
+from typing import Any
+
+from data import load_dataset, write_json
+from inference import make_run_id, set_seed
+from logging_utils import RunLogger
+from constants import get_model_spec, resolve_model_path, normalize_quantization
+from constants import RUNS_DIR, ensure_dir
+from common import load_prompt, render_extraction_messages
+import torch
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from datasets import Dataset
+from transformers import TrainingArguments
+from transformers import Trainer
+from modeling import build_model_load_kwargs
+
+
+def _ensure_chat_template(tokenizer):
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token_id = tokenizer.eos_token_id
+    if not getattr(tokenizer, "chat_template", None): # el model q estava provant no tenia chat template jsjs
+        tokenizer.chat_template = (
+            "{% for message in messages %}"
+            "{{ message['role'].upper() + ':\\n' + message['content'] + '\\n\\n' }}"
+            "{% endfor %}"
+            "{% if add_generation_prompt %}ASSISTANT:\\n{% endif %}"
+        )
+
+
+# DFDSAFASDFA HAURIA DE SER LA MATEIXA QUE LOAD MODEL AND TOKENIZER SEGURAMENT! PASSA QUE
+# AQUELLA NO TE SUPORT PER LORA PARAMETRES
+def load_training_model_and_tokenizer(model_name, model_path_override, quantization, lora_r, lora_alpha, lora_dropout, device="auto"):
+    quantization = normalize_quantization(quantization)
+    spec = get_model_spec(model_name)
+    model_path = resolve_model_path(model_name, model_path_override)
+
+    kwargs: dict[str, Any] = build_model_load_kwargs(
+        spec,
+        quantization=quantization,
+        device=device,
+    )
+
+    model = AutoModelForCausalLM.from_pretrained(model_path, use_safetensors=True, **kwargs)
+    model.config.use_cache = False
+    if quantization == "4bit":
+        model = prepare_model_for_kbit_training(model)
+    if hasattr(model, "gradient_checkpointing_enable"):
+        model.gradient_checkpointing_enable()
+
+    lora_config = LoraConfig(
+        r=lora_r,
+        lora_alpha=lora_alpha,
+        target_modules=list(spec.lora_targets),
+        lora_dropout=lora_dropout,
+        bias="none",
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, lora_config)
+
+    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=spec.trust_remote_code)
+    tokenizer.truncation_side = "left"
+    _ensure_chat_template(tokenizer)
+    return model, tokenizer
+
+
+def build_training_dataset(tokenizer, examples, prompt, max_length):
+    # ERA L'OLD tokenize_dataset 
+    # L'old tokenize dataset crec que feia algo malament, rollo no 
+    # maskejava (posava -100) el prompt
+    # no ens interessa predir el prompt lol, només  l'output, i que cross entropy no tingui en compte el prompt
+    rows = {"input_ids": [], "attention_mask": [], "labels": []}
+    eos = tokenizer.eos_token or ""
+    for example in examples:
+        messages = render_extraction_messages(prompt, example)
+        prompt_text = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        answer = json.dumps(example.get("gold", {}), ensure_ascii=False, sort_keys=True)
+        full_text = prompt_text + answer + eos # afegeix EOS token q ns si fa falta
+        tokenized = tokenizer(
+            full_text,
+            truncation=True,
+            max_length=max_length,
+            padding="max_length",
+        )
+        prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
+        labels = list(tokenized["input_ids"])
+        cutoff = min(len(prompt_ids), len(labels))
+        labels[:cutoff] = [-100] * cutoff
+        labels = [
+            -100 if mask == 0 or token == tokenizer.pad_token_id else label
+            for token, mask, label in zip(tokenized["input_ids"], tokenized["attention_mask"], labels)
+        ]
+        rows["input_ids"].append(tokenized["input_ids"])
+        rows["attention_mask"].append(tokenized["attention_mask"])
+        rows["labels"].append(labels)
+    return Dataset.from_dict(rows)
+
+
+def _training_arguments(output_dir, args):
+    # abans estava ajuntat a create_trainer
+    kwargs = {
+        "output_dir": str(output_dir),
+        "per_device_train_batch_size": args["per_device_train_batch_size"],
+        "per_device_eval_batch_size": args["per_device_eval_batch_size"],
+        "gradient_accumulation_steps": args["gradient_accumulation_steps"],
+        "eval_accumulation_steps": args["eval_accumulation_steps"],
+        "learning_rate": args["learning_rate"],
+        "num_train_epochs": args["epochs"],
+        "save_total_limit": args["save_total_limit"],
+        "load_best_model_at_end": True,
+        "save_strategy": "epoch",
+        "logging_strategy": "epoch",
+        "label_names": ["labels"],
+        "bf16": args["bf16"],
+        "fp16": args["fp16"],
+        "seed": args["seed"],
+        "report_to": [],
+    }
+    try:
+        return TrainingArguments(**kwargs, eval_strategy="epoch")
+    except TypeError:
+        return TrainingArguments(**kwargs, evaluation_strategy="epoch")
+
+
+def _write_training_history(run_dir, log_history):
+    # PLOTEAR EL TRAINING NO??? que sino es complicat veure si ha anat be tb
+    history_path = run_dir / "training_history.csv"
+    keys = sorted({key for row in log_history for key in row})
+    if keys:
+        with history_path.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=keys)
+            writer.writeheader()
+            writer.writerows(log_history)
+    try:
+        import matplotlib.pyplot as plt
+    except Exception:
+        return
+
+    train_points = [(row.get("epoch"), row.get("loss")) for row in log_history if row.get("loss") is not None]
+    eval_points = [(row.get("epoch"), row.get("eval_loss")) for row in log_history if row.get("eval_loss") is not None]
+    if not train_points and not eval_points:
+        return
+
+    plt.figure(figsize=(8, 5))
+    if train_points:
+        xs, ys = zip(*train_points)
+        plt.plot(xs, ys, marker="o", label="train loss")
+    if eval_points:
+        xs, ys = zip(*eval_points)
+        plt.plot(xs, ys, marker="o", label="eval loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(run_dir / "training_curve.png", dpi=160)
+    plt.close()
+
+
+
+class AspectWeightedTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        weights = inputs.pop("example_weight", None)
+        labels = inputs.get("labels")
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+        shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = labels[..., 1:].contiguous()
+
+        token_loss = F.cross_entropy(
+            shift_logits.view(-1, shift_logits.size(-1)),
+            shift_labels.view(-1),
+            ignore_index=-100,
+            reduction="none",
+        ).view(shift_labels.size())
+
+        valid = shift_labels.ne(-100)
+        per_example_loss = (token_loss * valid).sum(dim=1) / valid.sum(dim=1).clamp_min(1)
+
+        if weights is not None:
+            weights = weights.to(per_example_loss.device).float()
+            loss = (per_example_loss * weights).sum() / weights.sum().clamp_min(1.0)
+        else:
+            loss = per_example_loss.mean()
+
+        return (loss, outputs) if return_outputs else loss
+
+
+def _aspect_weights_from_examples(examples, max_weight=4.0):
+    from collections import Counter
+    import math
+
+    counts = Counter()
+    for ex in examples:
+        for aspect in ex.get("gold", {}):
+            counts[aspect] += 1
+
+    if not counts:
+        return {}
+
+    max_count = max(counts.values())
+    return {
+        aspect: min(max_weight, math.sqrt(max_count / count))
+        for aspect, count in counts.items()
+    }
+
+
+def _example_weights(examples, aspect_weights):
+    weights = []
+    for ex in examples:
+        gold = ex.get("gold", {})
+        if not gold:
+            weights.append(1.0)
+        else:
+            weights.append(max(aspect_weights.get(a, 1.0) for a in gold))
+    return weights
+
+
+def run_training(
+    model_name = "llama32B3",
+    prompt_name = "zero_shot/baseline",
+    train_data = "train",
+    devel_data = "devel",
+    synthetic_data = None,
+    output_root = RUNS_DIR,
+    run_name = None,
+    quantization = "none",
+    model_path = None,
+    seed = 13,
+    max_length = 1024,
+    epochs = 3.0,
+    learning_rate = 2e-5,
+    per_device_train_batch_size = 1,
+    per_device_eval_batch_size = 1,
+    gradient_accumulation_steps = 8,
+    eval_accumulation_steps = 4,
+    lora_r = 8,
+    lora_alpha = 16,
+    lora_dropout = 0.05,
+    save_total_limit = 2,
+    bf16 = True,
+    fp16 = False,
+    device = "auto",
+):
+    
+    quantization = normalize_quantization(quantization)
+    set_seed(seed)
+    try:
+        import torch
+
+        if bf16 and not torch.cuda.is_available():
+            bf16 = False
+        elif bf16 and hasattr(torch.cuda, "is_bf16_supported") and not torch.cuda.is_bf16_supported():
+            bf16 = False
+            if not fp16:
+                fp16 = True
+    except Exception:
+        pass
+
+    params = {
+        "task": "finetune",
+        "model": model_name,
+        "prompt": prompt_name,
+        "train_data": train_data,
+        "devel_data": devel_data,
+        "synthetic_data": synthetic_data,
+        "quantization": quantization,
+        "model_path": model_path,
+        "device": device,
+        "seed": seed,
+        "max_length": max_length,
+        "epochs": epochs,
+        "learning_rate": learning_rate,
+        "per_device_train_batch_size": per_device_train_batch_size,
+        "per_device_eval_batch_size": per_device_eval_batch_size,
+        "gradient_accumulation_steps": gradient_accumulation_steps,
+        "eval_accumulation_steps": eval_accumulation_steps,
+        "lora_r": lora_r,
+        "lora_alpha": lora_alpha,
+        "lora_dropout": lora_dropout,
+        "save_total_limit": save_total_limit,
+        "bf16": bf16,
+        "fp16": fp16,
+    }
+    run_id = run_name or make_run_id("finetune", params)
+    run_dir = ensure_dir(Path(output_root) / "finetune" / run_id)
+    ensure_dir(run_dir / "logs")
+    logger = RunLogger(run_dir / "logs" / "run.log")
+    logger.log("Starting fine-tuning run", run_id=run_id, model=model_name, seed=seed, quantization=quantization)
+    write_json(run_dir / "run.json", {"run_id": run_id, "params": params, "model_spec": get_model_spec(model_name).__dict__})
+
+    prompt = load_prompt(prompt_name)
+    train_examples = load_dataset(train_data)
+    if synthetic_data:
+        train_examples = train_examples + load_dataset(synthetic_data)
+    devel_examples = load_dataset(devel_data)
+    logger.log(
+        "Loaded data and prompt",
+        train_examples=len(train_examples),
+        devel_examples=len(devel_examples),
+        prompt=prompt.get("_path"),
+        synthetic=synthetic_data or "",
+    )
+
+    logger.log("Loading training model")
+    model, tokenizer = load_training_model_and_tokenizer(
+        model_name,
+        model_path_override=model_path,
+        quantization=quantization,
+        lora_r=lora_r,
+        lora_alpha=lora_alpha,
+        lora_dropout=lora_dropout,
+        device=device,
+    )
+    logger.log("Training model loaded")
+    train_dataset = build_training_dataset(tokenizer, train_examples, prompt, max_length=max_length)
+    eval_dataset = build_training_dataset(tokenizer, devel_examples, prompt, max_length=max_length)
+
+    loss_weighting = params.get("loss_weighting", "none")
+    trainer_cls = Trainer
+    if loss_weighting and loss_weighting != "none":
+        max_example_weight = float(params.get("max_example_weight", 4.0))
+        aspect_weights = _aspect_weights_from_examples(train_examples, max_weight=max_example_weight)
+        weights = _example_weights(train_examples, aspect_weights)
+        train_dataset = train_dataset.add_column("example_weight", weights)
+        trainer_cls = AspectWeightedTrainer
+        logger.log("Enabled aspect-weighted loss", loss_weighting=loss_weighting, max_example_weight=max_example_weight, aspect_weights=aspect_weights)
+    args = _training_arguments(run_dir / "checkpoints", params)
+    trainer = trainer_cls(model=model, args=args, train_dataset=train_dataset, eval_dataset=eval_dataset)
+    logger.log("Starting trainer.train")
+    result = trainer.train()
+    logger.log("Trainer finished")
+    adapter_dir = ensure_dir(run_dir / "adapter")
+    trainer.save_model(str(adapter_dir))
+    tokenizer.save_pretrained(str(adapter_dir))
+    _write_training_history(run_dir, trainer.state.log_history)
+    write_json(
+        run_dir / "train_metrics.json",
+        {
+            "train_result": getattr(result, "metrics", {}),
+            "train_examples": len(train_examples),
+            "devel_examples": len(devel_examples),
+            "adapter_dir": str(adapter_dir),
+            "tensorboard_dir": str(run_dir / "tensorboard"),
+            "training_history": str(run_dir / "training_history.csv"),
+            "training_curve": str(run_dir / "training_curve.png"),
+        },
+    )
+    logger.log("Finished fine-tuning run", adapter_dir=adapter_dir)
+    return run_dir
