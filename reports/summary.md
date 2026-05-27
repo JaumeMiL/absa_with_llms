@@ -4,10 +4,10 @@
 
 | task | runs |
 |---|---:|
-| few_shot | 51 |
+| few_shot | 163 |
 | finetune_eval | 5 |
-| finetune_train | 5 |
-| zero_shot | 64 |
+| finetune_train | 14 |
+| zero_shot | 76 |
 
 ## Best Individual Runs
 
@@ -18,21 +18,21 @@
 | finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 76.29 | 77.34 |
 | finetune_eval | qwen25B3 | my_prompt | 0 | first | 4bit | 13 | 73.61 | 75.29 |
 | finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 72.71 | 73.67 |
+| few_shot | llama32B3 | cot | 10 | random | 4bit | 13 | 70.91 | 72.65 |
+| few_shot | llama32B3 | cot | 10 | random | 4bit | 13 | 70.91 | 72.65 |
 | few_shot | llama32B3 | cot | 5 | random | none | 13 | 70.91 | 71.80 |
+| few_shot | llama32B3 | cot | 5 | random | none | 13 | 70.71 | 71.54 |
 | few_shot | llama32B3 | my_prompt | 5 | random | none | 13 | 70.65 | 71.11 |
+| few_shot | llama32B3 | cot | 10 | random | none | 13 | 69.61 | 71.10 |
+| few_shot | qwen25B3 | cot | 10 | first | 4bit | 13 | 69.53 | 71.65 |
+| few_shot | qwen25B3 | cot | 10 | first | 4bit | 13 | 69.53 | 71.65 |
 | few_shot | llama32B3 | cot | 10 | random | none | 13 | 69.48 | 70.64 |
+| few_shot | llama32B3 | my_prompt | 5 | random | 4bit | 13 | 68.38 | 68.15 |
 | few_shot | llama32B3 | my_prompt | 10 | first | none | 13 | 68.24 | 71.75 |
-| few_shot | llama32B3 | my_prompt | 10 | random | none | 13 | 67.84 | 70.25 |
-| few_shot | llama32B3 | cot | 10 | first | none | 13 | 67.27 | 70.91 |
-| few_shot | qwen25B3 | cot | 10 | random | none | 13 | 66.98 | 72.01 |
-| few_shot | llama32B3 | my_prompt | 8 | first | none | 13 | 66.91 | 70.47 |
-| few_shot | qwen25B3 | cot | 2 | random | none | 13 | 66.72 | 68.39 |
-| few_shot | llama32B3 | my_prompt | 8 | first | none | 13 | 66.59 | 69.46 |
-| few_shot | qwen25B3 | cot | 10 | first | none | 13 | 66.58 | 69.13 |
-| few_shot | qwen25B3 | my_prompt | 10 | random | none | 13 | 66.28 | 71.72 |
-| few_shot | qwen25B3 | cot | 5 | random | none | 13 | 65.35 | 66.59 |
-| few_shot | qwen25B3 | my_prompt | 2 | random | none | 13 | 65.27 | 68.51 |
-| few_shot | llama32B3 | my_prompt | 2 | first | none | 13 | 64.87 | 65.38 |
+| few_shot | qwen25B3 | my_prompt | 10 | first | 4bit | 13 | 68.08 | 71.50 |
+| few_shot | llama32B3 | cot | 5 | random | 4bit | 13 | 68.07 | 68.78 |
+| few_shot | llama32B3 | cot | 5 | random | 4bit | 13 | 68.07 | 68.78 |
+| few_shot | qwen25B3 | confusion_guard | 10 | random | none | 13 | 67.94 | 71.94 |
 
 ## Best Seed-Aggregated Settings
 
@@ -43,21 +43,21 @@
 | finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 1 | 76.29 | 0.00 |
 | finetune_eval | qwen25B3 | my_prompt | 0 | first | 4bit | 13 | 1 | 73.61 | 0.00 |
 | finetune_eval | llama32B3 | my_prompt | 0 | first | 4bit | 13 | 1 | 72.71 | 0.00 |
-| few_shot | llama32B3 | cot | 5 | random | none | 13 | 1 | 70.91 | 0.00 |
+| few_shot | llama32B3 | cot | 10 | random | 4bit | 13 | 1 | 70.91 | 0.00 |
+| few_shot | llama32B3 | cot | 10 | random | 4bit | 13 | 1 | 70.91 | 0.00 |
+| few_shot | llama32B3 | cot | 5 | random | none | 13 | 2 | 70.81 | 0.15 |
 | few_shot | llama32B3 | my_prompt | 5 | random | none | 13 | 1 | 70.65 | 0.00 |
-| few_shot | llama32B3 | cot | 10 | random | none | 13 | 1 | 69.48 | 0.00 |
+| few_shot | llama32B3 | cot | 10 | random | none | 13 | 2 | 69.54 | 0.10 |
+| few_shot | qwen25B3 | cot | 10 | first | 4bit | 13 | 1 | 69.53 | 0.00 |
+| few_shot | qwen25B3 | cot | 10 | first | 4bit | 13 | 1 | 69.53 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 5 | random | 4bit | 13 | 1 | 68.38 | 0.00 |
 | few_shot | llama32B3 | my_prompt | 10 | first | none | 13 | 1 | 68.24 | 0.00 |
+| few_shot | qwen25B3 | my_prompt | 10 | first | 4bit | 13 | 1 | 68.08 | 0.00 |
+| few_shot | llama32B3 | cot | 5 | random | 4bit | 13 | 1 | 68.07 | 0.00 |
+| few_shot | llama32B3 | cot | 5 | random | 4bit | 13 | 1 | 68.07 | 0.00 |
+| few_shot | qwen25B3 | confusion_guard | 10 | random | none | 13 | 2 | 67.94 | 0.00 |
 | few_shot | llama32B3 | my_prompt | 10 | random | none | 13 | 1 | 67.84 | 0.00 |
-| few_shot | llama32B3 | cot | 10 | first | none | 13 | 1 | 67.27 | 0.00 |
-| few_shot | qwen25B3 | cot | 10 | random | none | 13 | 1 | 66.98 | 0.00 |
-| few_shot | llama32B3 | my_prompt | 8 | first | none | 13 | 2 | 66.75 | 0.22 |
-| few_shot | qwen25B3 | cot | 2 | random | none | 13 | 1 | 66.72 | 0.00 |
-| few_shot | qwen25B3 | cot | 10 | first | none | 13 | 1 | 66.58 | 0.00 |
-| few_shot | qwen25B3 | my_prompt | 10 | random | none | 13 | 1 | 66.28 | 0.00 |
-| few_shot | qwen25B3 | cot | 5 | random | none | 13 | 1 | 65.35 | 0.00 |
-| few_shot | qwen25B3 | my_prompt | 2 | random | none | 13 | 1 | 65.27 | 0.00 |
-| few_shot | llama32B3 | my_prompt | 2 | first | none | 13 | 1 | 64.87 | 0.00 |
-| few_shot | llama32B3 | cot | 5 | first | none | 13 | 1 | 64.40 | 0.00 |
+| few_shot | llama32B3 | my_prompt | 10 | random | 4bit | 13 | 1 | 67.23 | 0.00 |
 
 ## Generated Files
 
