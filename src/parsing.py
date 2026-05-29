@@ -18,6 +18,56 @@ class NormalizedPrediction:
     valid_json: bool
     parse_error: str | None = None
     invalid_items: list[str] | None = None
+    repaired_items: list[str] | None = None
+
+
+SAFE_ASPECT_ALIASES = {
+    "ambiance": "ambience",
+    "atmosphere": "ambience",
+    "decor": "ambience",
+    "decoration": "ambience",
+    "overall": "restaurant_general",
+    "overall_experience": "restaurant_general",
+    "general": "restaurant_general",
+    "restaurant": "restaurant_general",
+    "place": "restaurant_general",
+    "staff": "service",
+    "waiter": "service",
+    "waiters": "service",
+    "waitress": "service",
+    "waitresses": "service",
+    "hostess": "service",
+    "attention": "service",
+    "drink_prices": "drinks_prices",
+    "drink_price": "drinks_prices",
+    "drink_quality": "drinks_quality",
+    "drink_options": "drinks_style_options",
+    "drink_style_options": "drinks_style_options",
+    "menu_options": "food_style_options",
+    "food_options": "food_style_options",
+    "food_variety": "food_style_options",
+    "portion_size": "food_style_options",
+    "portions": "food_style_options",
+}
+
+SAFE_POLARITY_ALIASES = {
+    "mixed": "conflict",
+    "both": "conflict",
+    "conflicted": "conflict",
+    "positive_negative": "conflict",
+}
+
+AMBIGUOUS_ASPECTS = {
+    "price",
+    "prices",
+    "quality",
+    "options",
+    "style_options",
+    "style",
+    "food",
+    "drinks",
+    "drink",
+}
 
 
 def extract_json_object(raw):
@@ -63,7 +113,56 @@ def extract_json_object(raw):
 
     return {}, "could not parse JSON object"
 
-def normalize_prediction(raw) -> NormalizedPrediction:
+
+def _levenshtein(left: str, right: str) -> int:
+    if left == right:
+        return 0
+    if not left:
+        return len(right)
+    if not right:
+        return len(left)
+    previous = list(range(len(right) + 1))
+    for i, left_char in enumerate(left, start=1):
+        current = [i]
+        for j, right_char in enumerate(right, start=1):
+            current.append(
+                min(
+                    previous[j] + 1,
+                    current[j - 1] + 1,
+                    previous[j - 1] + int(left_char != right_char),
+                )
+            )
+        previous = current
+    return previous[-1]
+
+
+def repair_aspect(aspect: str, repair_policy: str = "none") -> str | None:
+    if aspect in ALLOWED_ASPECT_SET:
+        return aspect
+    if repair_policy not in {"aliases", "aliases_fuzzy"}:
+        return None
+    if aspect in SAFE_ASPECT_ALIASES:
+        return SAFE_ASPECT_ALIASES[aspect]
+    if repair_policy != "aliases_fuzzy" or aspect in AMBIGUOUS_ASPECTS:
+        return None
+
+    distances = sorted((_levenshtein(aspect, allowed), allowed) for allowed in ASPECTS)
+    best_distance, best_aspect = distances[0]
+    second_distance = distances[1][0] if len(distances) > 1 else 999
+    max_distance = 2 if len(aspect) <= 8 else 3
+    if best_distance <= max_distance and second_distance - best_distance >= 2:
+        return best_aspect
+    return None
+
+
+def repair_polarity(polarity: str, repair_policy: str = "none") -> str | None:
+    if polarity in ALLOWED_POLARITY_SET:
+        return polarity
+    if repair_policy in {"aliases", "aliases_fuzzy"}:
+        return SAFE_POLARITY_ALIASES.get(polarity)
+    return None
+
+def normalize_prediction(raw, repair_policy: str = "none") -> NormalizedPrediction:
     # retorna un objecte de "normalized prediction" q basicament te els les opinions i si es un json valid i tal
     parsed, parse_error = extract_json_object(raw)
 
@@ -74,15 +173,28 @@ def normalize_prediction(raw) -> NormalizedPrediction:
         parsed = parsed["opinions"]
     elif isinstance(parsed.get("gold"), dict):
         parsed = parsed["gold"]
+    elif "aspect" in parsed and "polarity" in parsed:
+        parsed = {parsed.get("aspect"): parsed.get("polarity")}
 
     opinions: dict[str, str] = {}
     invalid: list[str] = []
+    repaired: list[str] = []
     for aspect, polarity in parsed.items():
         aspect_norm = str(aspect).strip().lower().replace("-", "_").replace(" ", "_") # per si de cas normalitzem q no me'n fio dels models
         polarity_norm = str(polarity).strip().lower()
-        if aspect_norm in ALLOWED_ASPECT_SET and polarity_norm in ALLOWED_POLARITY_SET:
-            opinions[aspect_norm] = polarity_norm
+        repaired_aspect = repair_aspect(aspect_norm, repair_policy)
+        repaired_polarity = repair_polarity(polarity_norm, repair_policy)
+        if repaired_aspect in ALLOWED_ASPECT_SET and repaired_polarity in ALLOWED_POLARITY_SET:
+            opinions[repaired_aspect] = repaired_polarity
+            if repaired_aspect != aspect_norm or repaired_polarity != polarity_norm:
+                repaired.append(f"{aspect}:{polarity}->{repaired_aspect}:{repaired_polarity}")
         else:
             invalid.append(f"{aspect}:{polarity}")
-    return NormalizedPrediction(opinions=opinions,valid_json=valid_json,parse_error=parse_error,invalid_items=invalid,)
+    return NormalizedPrediction(
+        opinions=opinions,
+        valid_json=valid_json,
+        parse_error=parse_error,
+        invalid_items=invalid,
+        repaired_items=repaired,
+    )
 

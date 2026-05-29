@@ -38,7 +38,7 @@ def opinion_pairs(opinions):
     return {(aspect, polarity) for aspect, polarity in opinions.items()}
 
 
-def evaluate_examples(examples):
+def evaluate_examples(examples, repair_policy = "none"):
     rows = []
     errors = []
     total_pred = total_exp = total_ok = 0
@@ -48,11 +48,12 @@ def evaluate_examples(examples):
     per_aspect = {aspect: [0, 0, 0] for aspect in ASPECTS}
     valid_json_count = 0
     empty_prediction_count = 0
+    repaired_items_count = 0
 
     for idx, example in enumerate(examples):
         # realment inference li passa prediction ja i no caldria normalitzar :) pero bno igualment es elm ateix codi
         raw_prediction = example.get("raw_prediction", example.get("prediction", {}))
-        normalized = normalize_prediction(raw_prediction)
+        normalized = normalize_prediction(raw_prediction, repair_policy=repair_policy)
         prediction = normalized.opinions
         gold = example.get("gold", example.get("opinions", {})) or {}
 
@@ -68,6 +69,7 @@ def evaluate_examples(examples):
         total_ok += ok_n
         valid_json_count += int(normalized.valid_json)
         empty_prediction_count += int(pred_n == 0)
+        repaired_items_count += len(normalized.repaired_items or [])
 
         legacy = _prf(pred_n, exp_n, ok_n, empty_is_perfect=False) # legacy es la antiga de 100.0 * dsfdsfs pero que no te en compte quan el gold està buit I a més el model també prediu buit (no el conta com a bé)
         improved = _prf(pred_n, exp_n, ok_n, empty_is_perfect=True) # aquest si que te en compte el gold buit
@@ -102,6 +104,7 @@ def evaluate_examples(examples):
             "valid_json": normalized.valid_json,
             "parse_error": normalized.parse_error or "",
             "invalid_items": ";".join(normalized.invalid_items or []),
+            "repaired_items": ";".join(normalized.repaired_items or []),
         }
         rows.append(row)
         if row["parse_error"] or row["invalid_items"]:
@@ -125,13 +128,15 @@ def evaluate_examples(examples):
         "per_aspect": {aspect: asdict(_prf(*counts)) for aspect, counts in per_aspect.items()},
         "json_validity_rate": 100.0 * valid_json_count / count, # tb guardem com a metrica quants json son valids
         "empty_prediction_rate": 100.0 * empty_prediction_count / count,
+        "repair_policy": repair_policy,
+        "repaired_items": repaired_items_count,
         "errors": len(errors),
     }
     metrics["examples"] = rows
     return metrics, errors
 
 
-def evaluate_file(path): # permet carregar un fitxer de prediccions
+def evaluate_file(path, repair_policy = "none"): # permet carregar un fitxer de prediccions
     path = Path(path)
     if path.suffix == ".jsonl": # jsonl l'hem de separar per linies
         examples = [
@@ -143,7 +148,7 @@ def evaluate_file(path): # permet carregar un fitxer de prediccions
         examples = load_json(path)
     if not isinstance(examples, list):
         raise ValueError(f"Prediction file must contain a JSON list: {path}")
-    return evaluate_examples(examples)
+    return evaluate_examples(examples, repair_policy=repair_policy)
 
 
 def write_errors_csv(path, errors):
@@ -162,6 +167,7 @@ def write_errors_csv(path, errors):
         "valid_json",
         "parse_error",
         "invalid_items",
+        "repaired_items",
     ]
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)

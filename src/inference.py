@@ -77,7 +77,7 @@ def _encode_messages(tokenizer, model, messages):
         }
     return encoded
 
-def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens):
+def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens, constraint = "none"):
     inputs = _encode_messages(tokenizer, model, messages)
     device = get_device(model)
     inputs = {
@@ -96,6 +96,8 @@ def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens
     if do_sample:
         generation_kwargs["temperature"] = temperature
         generation_kwargs["top_p"] = top_p
+    if constraint not in {"", None, "none", "json_schema"}:
+        raise ValueError(f"Unsupported decoding constraint: {constraint}")
 
     with torch.no_grad():
         gen_tokens = model.generate(**inputs, **generation_kwargs)
@@ -186,6 +188,8 @@ def run_inference(
     model_path: str | None = None,
     device: str = "auto",
     limit: int | None = None,
+    repair_policy: str = "none",
+    constraint: str = "none",
 ):
     set_seed(seed)
     quantization = normalize_quantization(quantization)
@@ -209,16 +213,22 @@ def run_inference(
         "model_path": model_path,
         "device": device,
         "limit": limit,
+        "repair_policy": repair_policy,
+        "constraint": constraint,
     }
 
     run_id = run_name or make_run_id(task, params)
     # les runs es creen a runs/(tipus flow zero_shot)/nom i alla hi ha prediccions, run, logs...
     run_dir = ensure_dir(Path(output_root) / task / run_id)
+    if (run_dir / "metrics.json").exists() and (run_dir / "predictions.jsonl").exists():
+        return run_dir
 
     # el logg realmet podria ser prints de python pq al boada hi ha el log de slurm pero en local no tinc jeje
     ensure_dir(run_dir / "logs")
     logger = RunLogger(run_dir / "logs" / "run.log")
     logger.log("Starting inference run", run_id=run_id, task=task, model=model_name, split=split, seed=seed)
+    if constraint == "json_schema":
+        logger.log("decoding.constraint=json_schema requested; using strict JSON prompt plus parser/repair fallback")
     # el run.json guarda la configuracio basicament (parameters i model utilitzat)
     write_json(run_dir / "run.json", {"run_id": run_id, "params": params, "model_spec": get_model_spec(model_name).__dict__})
 
@@ -265,7 +275,8 @@ def run_inference(
             # els extraction messages son els de prediccio a partir de text
             # els generaiton messages son els de predir text a partir del gold q fa servir synthetic
             messages = render_extraction_messages(prompt, example, selected_shots)
-            logger.log(messages)
+            if idx == 0:
+                logger.log("Rendered first prompt", messages=len(messages))
             raw = generate_text(
                 model,
                 tokenizer,
@@ -273,13 +284,18 @@ def run_inference(
                 temperature=temperature,
                 top_p=top_p,
                 max_new_tokens=max_new_tokens,
+                constraint=constraint,
             )
-            normalized = normalize_prediction(raw)
+            strict_normalized = normalize_prediction(raw, repair_policy="none")
+            normalized = normalize_prediction(raw, repair_policy=repair_policy)
             output = dict(example) # example es el text inicial + gold
             output["raw_prediction"] = raw # IMPORTANT: ns si raw te el prompt també inclos o no, sino s'hauria de treure
             output["prediction"] = normalized.opinions
+            output["strict_prediction"] = strict_normalized.opinions
             output["parse_error"] = normalized.parse_error
             output["invalid_items"] = normalized.invalid_items or []
+            output["repaired_items"] = normalized.repaired_items or []
+            output["repair_policy"] = repair_policy
             output["run_id"] = run_id
             output["example_index"] = idx
             jsonl.write(json.dumps(output, ensure_ascii=False) + "\n")
@@ -289,7 +305,17 @@ def run_inference(
     write_json(run_dir / "predictions.assignment.json", assignment_examples)
 
     # avalua a partir d'allo, evaluate examples lelgeix el key de prediction
-    metrics, errors = evaluate_examples(assignment_examples)
+    metrics, errors = evaluate_examples(assignment_examples, repair_policy=repair_policy)
+    if repair_policy != "none":
+        strict_metrics, _ = evaluate_examples(assignment_examples, repair_policy="none")
+        metrics["strict_without_repair"] = {
+            "macro_assignment_compatible": strict_metrics["macro_assignment_compatible"],
+            "micro": strict_metrics["micro"],
+            "macro_empty_is_perfect": strict_metrics["macro_empty_is_perfect"],
+            "json_validity_rate": strict_metrics["json_validity_rate"],
+            "empty_prediction_rate": strict_metrics["empty_prediction_rate"],
+            "errors": strict_metrics["errors"],
+        }
     save_evaluation(run_dir / "metrics.json", run_dir / "errors.csv", metrics, errors)
     logger.log(
         "Finished inference run",

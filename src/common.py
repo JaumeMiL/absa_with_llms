@@ -175,6 +175,8 @@ def _format_template(template , example = None, **values):
         "id": example.get("id", ""),
         "rid": example.get("rid", example.get("id", "")),
         "language": example.get("language", ""),
+        "target_language": values.get("target_language", example.get("target_language", example.get("language", ""))),
+        "target_language_name": values.get("target_language_name", example.get("target_language_name", "")),
         "text": example.get("text", ""),
         "opinions_json": json.dumps(
             values.get("opinions", example.get("gold", example.get("opinions", {}))),
@@ -193,7 +195,7 @@ def _format_template(template , example = None, **values):
         rendered = rendered.format(**data) # PYTHON TE UN FORMAT PER DEFECTE QUE ES {}
         # PQ COLLONS FEI ASERVIR {{}}
     
-    except (KeyError, ValueError):
+    except (KeyError, ValueError, IndexError):
         pass
 
     if "{text}" not in template and "{{text}}" not in template and "<text>{{text}}</text>" not in template:
@@ -207,9 +209,15 @@ def render_user(prompt, example):
     return _format_template(prompt["user_template"], example)
 
 
-def render_generation_user(prompt, opinions):
+def render_generation_user(prompt, opinions, target_language = "", target_language_name = ""):
     # Example = None
-    return _format_template(prompt["user_template"], None, opinions=opinions)
+    return _format_template(
+        prompt["user_template"],
+        None,
+        opinions=opinions,
+        target_language=target_language,
+        target_language_name=target_language_name,
+    )
 
 
 def render_extraction_messages(prompt, example, shots = None):
@@ -228,12 +236,13 @@ def render_extraction_messages(prompt, example, shots = None):
 
        
 
-def render_generation_messages(prompt, opinions, shots = None):
+def render_generation_messages(prompt, opinions, shots = None, target_language = "", target_language_name = ""):
     messages = [{"role": "system", "content": prompt["system"]}]
     for shot in shots or []:
-        messages.append({"role": "user", "content": render_generation_user(prompt, shot.get("gold", {}))})
+        shot_language = shot.get("language", "")
+        messages.append({"role": "user", "content": render_generation_user(prompt, shot.get("gold", {}), shot_language, shot_language)})
         messages.append({"role": "assistant", "content": shot.get("text", "")})
-    messages.append({"role": "user", "content": render_generation_user(prompt, opinions)})
+    messages.append({"role": "user", "content": render_generation_user(prompt, opinions, target_language, target_language_name)})
     return messages
 
 
