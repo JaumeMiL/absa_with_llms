@@ -101,6 +101,14 @@ def run_experiment_config(config):
         return _run_augmentation_config(config)
     if kind == "finetune":
         return _run_finetune_config(config)
+    if kind == "ensemble_eval":
+        from ensemble import run_ensemble_config
+
+        return run_ensemble_config(config)
+    if kind == "quality_sample":
+        from quality import run_quality_sample_config
+
+        return run_quality_sample_config(config)
     raise ValueError(f"Unknown experiment kind: {kind}")
 
 
@@ -112,7 +120,7 @@ def _run_name(config, task, prompt_file = None):
     seed = get_nested(config, "seed")
     model = get_nested(config, "model.name", "model")
     pieces = [name, task, model]
-    suffix = config.get("run_name_suffix") or os.environ.get("ABSA_RUN_NAME_SUFFIX")
+    suffix = "" if config.get("disable_run_name_suffix") else (config.get("run_name_suffix") or os.environ.get("ABSA_RUN_NAME_SUFFIX"))
     if suffix:
         pieces.insert(1, suffix)
     variant = config.get("variant")
@@ -133,6 +141,12 @@ def _run_name(config, task, prompt_file = None):
         pieces.append(f"t{temperature}")
     if top_p is not None:
         pieces.append(f"p{top_p}")
+    repair_policy = get_nested(config, "repair_policy")
+    if repair_policy and repair_policy != "none":
+        pieces.append(f"repair{repair_policy}")
+    constraint = get_nested(config, "decoding.constraint")
+    if constraint and constraint != "none":
+        pieces.append(f"constraint{constraint}")
     learning_rate = get_nested(config, "training.learning_rate")
     epochs = get_nested(config, "training.epochs")
     batch_size = get_nested(config, "training.per_device_train_batch_size")
@@ -140,6 +154,7 @@ def _run_name(config, task, prompt_file = None):
     max_length = get_nested(config, "training.max_length")
     bf16 = get_nested(config, "training.bf16")
     fp16 = get_nested(config, "training.fp16")
+    lora_target_modules = get_nested(config, "lora.target_modules")
     if learning_rate is not None:
         pieces.append(f"lr{learning_rate}")
     if epochs is not None:
@@ -154,6 +169,8 @@ def _run_name(config, task, prompt_file = None):
         pieces.append("bf16")
     if fp16:
         pieces.append("fp16")
+    if lora_target_modules:
+        pieces.append(f"lora{lora_target_modules}")
     if seed is not None:
         pieces.append(f"seed{seed}")
     return "-".join(_slug(piece) for piece in pieces if piece)
@@ -188,6 +205,8 @@ def _run_inference_config(config: dict[str, Any]) -> Path:
         adapter=get_nested(config, "model.adapter"),
         device=get_nested(config, "model.device", "auto"),
         limit=config.get("limit"),
+        repair_policy=get_nested(config, "repair_policy", "none"),
+        constraint=get_nested(config, "decoding.constraint", "none"),
     )
 
 def _run_augmentation_config(config):
@@ -206,6 +225,10 @@ def _run_augmentation_config(config):
         temperature=float(get_nested(config, "decoding.temperature", 0.8)),
         top_p=float(get_nested(config, "decoding.top_p", 0.95)),
         max_new_tokens=int(get_nested(config, "decoding.max_new_tokens", 256)),
+        language_policy=config.get("language_policy", "train_distribution"),
+        polarity_policy=config.get("polarity_policy", "train_distribution"),
+        target_aspects=config.get("target_aspects"),
+        force_target_aspect=bool(config.get("force_target_aspect", False)),
     )
 
 
@@ -235,7 +258,12 @@ def _run_finetune_config(config: dict[str, Any]) -> Path:
         lora_r=int(get_nested(config, "lora.r", 8)),
         lora_alpha=int(get_nested(config, "lora.alpha", 16)),
         lora_dropout=float(get_nested(config, "lora.dropout", 0.05)),
+        lora_target_modules=get_nested(config, "lora.target_modules", "attention_qv"),
         save_total_limit=int(get_nested(config, "training.save_total_limit", 2)),
         bf16=bool(get_nested(config, "training.bf16", True)),
         fp16=bool(get_nested(config, "training.fp16", False)),
+        warmup_ratio=float(get_nested(config, "training.warmup_ratio", 0.0)),
+        lr_scheduler_type=get_nested(config, "training.lr_scheduler_type", "linear"),
+        max_grad_norm=float(get_nested(config, "training.max_grad_norm", 1.0)),
+        early_stopping_patience=get_nested(config, "training.early_stopping_patience"),
     )

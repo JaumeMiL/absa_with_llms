@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 
@@ -126,6 +127,12 @@ MODEL_REGISTRY: dict[str, ModelSpec] = {
         lora_targets=("q_proj", "v_proj"),
         local_smoke=True,
     ),
+    "ensemble": ModelSpec(
+        name="ensemble",
+        paths=("",),
+        reportable=True,
+        lora_targets=(),
+    ),
 }
 
 
@@ -144,6 +151,11 @@ def resolve_model_path(model, override = None):
     if override:
         return override
     spec = get_model_spec(model)
+    model_root = os.environ.get("ABSA_MODEL_ROOT")
+    if model_root and model in MODEL_REGISTRY:
+        rooted = Path(model_root) / model
+        if rooted.exists():
+            return str(rooted)
     for candidate in spec.paths:
         if Path(candidate).exists():
             return candidate
