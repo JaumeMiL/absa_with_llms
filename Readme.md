@@ -288,13 +288,3 @@ The final PDF is available as:
 PauHidalgo_JaumeMora_ABSA_with_llms.pdf
 ```
 
-For editing the LaTeX report, start from:
-
-```text
-reports/report_assets/report_main_insertions.tex
-reports/report_assets/report_annex_insertions.tex
-reports/report_assets/report_rewrite_notes.md
-```
-
-These files contain the figures, tables, and interpretation notes that match the
-current run data.
