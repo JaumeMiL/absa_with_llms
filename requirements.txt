@@ -1,0 +1,16 @@
+torch
+transformers
+accelerate
+datasets
+peft
+bitsandbytes
+safetensors
+sentencepiece
+protobuf
+PyYAML
+numpy
+pandas
+matplotlib
+scikit-learn
+pytest
+tqdm

@@ -6,3 +6,8 @@ artifacts
 *.jsonl
 *.save
 boada/
+vast/
+tests/
+FULL_EXPERIMENTS*
+*.zip
+report_assets
