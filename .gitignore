@@ -10,4 +10,28 @@ vast/
 tests/
 FULL_EXPERIMENTS*
 *.zip
-report_assets
+
+
+# 1. Ignore all contents inside report_assets by default
+reports/report_assets/*
+
+# 2. Allow Git to look inside the figures subdirectory
+!reports/report_assets/figures/
+
+# 3. Ignore all contents inside the figures subdirectory by default
+reports/report_assets/figures/*
+
+# 4. Whitelist the specific root-level report_assets files from the README
+!reports/report_assets/report_main_insertions.tex
+!reports/report_assets/report_annex_insertions.tex
+!reports/report_assets/report_rewrite_notes.md
+
+# 5. Whitelist the specific figure files mentioned in the README
+!reports/report_assets/figures/00_run_landscape_individual_runs.png
+!reports/report_assets/figures/02_zero_shot_prompt_descriptive.png
+!reports/report_assets/figures/04_few_shot_macro_by_shots_strategy.png
+!reports/report_assets/figures/06_finetune_best_by_data_regime.png
+!reports/report_assets/figures/07_finetune_lora_target_controlled.png
+!reports/report_assets/figures/08_ensemble_comparison.png
+!reports/report_assets/figures/09_error_analysis_per_aspect_heatmap.png
+!reports/report_assets/figures/10_error_analysis_per_polarity_heatmap.png
