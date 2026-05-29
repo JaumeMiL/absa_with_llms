@@ -15,6 +15,8 @@ def select_shots(train, num_shots, strategy, seed):
         return train_list[:num_shots]
     if strategy == "diverse":
         return select_diverse(train, num_shots, seed=seed)
+    if strategy == "coverage_rerank":
+        return select_coverage_rerank(train, num_shots, seed=seed)
     raise NotImplementedError(f"Selection of fewshot examples via {strategy} not implemented")
 
 def _features(example):
@@ -46,6 +48,58 @@ def select_diverse(train, num_shots, seed):
                 best_pos = pos
                 best_score = score
                 best_size = len(feats)
+        item = remaining.pop(best_pos)
+        selected.append(item)
+        covered.update(_features(item[1]))
+
+    selected.sort(key=lambda item: item[0])
+    return [example for _, example in selected]
+
+
+WEAK_ASPECTS = {
+    "location",
+    "food_style_options",
+    "drinks_quality",
+    "food_prices",
+    "restaurant_prices",
+}
+
+WEAK_POLARITIES = {"neutral", "conflict"}
+
+
+def _coverage_score(example, covered):
+    feats = _features(example)
+    new = feats - covered
+    gold = example.get("gold") or {}
+    score = 2.0 * len(new) + 0.1 * len(gold)
+    for aspect, polarity in gold.items():
+        if aspect in WEAK_ASPECTS:
+            score += 2.5
+        if polarity in WEAK_POLARITIES:
+            score += 2.0
+        if aspect in WEAK_ASPECTS and polarity in WEAK_POLARITIES:
+            score += 2.5
+    if len(gold) >= 3:
+        score += 0.5
+    return score
+
+
+def select_coverage_rerank(train, num_shots, seed):
+    rng = random.Random(seed)
+    indexed = list(enumerate(train))
+    rng.shuffle(indexed)
+    selected = []
+    covered = set()
+    remaining = indexed
+
+    while remaining and len(selected) < num_shots:
+        best_pos = 0
+        best_score = float("-inf")
+        for pos, (_, example) in enumerate(remaining):
+            score = _coverage_score(example, covered)
+            if score > best_score:
+                best_pos = pos
+                best_score = score
         item = remaining.pop(best_pos)
         selected.append(item)
         covered.update(_features(item[1]))
