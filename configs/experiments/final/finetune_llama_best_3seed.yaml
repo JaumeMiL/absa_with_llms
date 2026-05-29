@@ -1,0 +1,42 @@
+kind: finetune
+name: final_finetune_llama_gpt55_synth_10ep
+description: Re-run current best Llama GPT synthetic recipe with three seeds.
+
+output_root: runs
+
+model:
+  name: llama32B3
+  path:
+  quantization: 4bit
+  device: auto
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+data:
+  train: artifacts/generated_data/gpt5.5_1000/train_plus_synth.json
+  devel: devel
+  synthetic:
+
+training:
+  max_length: 512
+  epochs: 10
+  learning_rate: 0.00002
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  eval_accumulation_steps: 4
+  save_total_limit: 2
+  bf16: true
+  fp16: false
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+
+lora:
+  r: 8
+  alpha: 32
+  dropout: 0.05
+  target_modules: attention_qv
+
+seeds: [13, 42, 101]

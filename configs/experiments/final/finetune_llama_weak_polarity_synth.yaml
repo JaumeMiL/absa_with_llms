@@ -1,0 +1,48 @@
+kind: finetune
+name: final_finetune_llama_weak_polarity_synth
+description: Train Llama on GPT synthetic plus targeted weak-aspect/neutral/conflict synthetic data.
+
+output_root: runs
+
+model:
+  name: llama32B3
+  path:
+  quantization: 4bit
+  device: auto
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+data:
+  train: artifacts/generated_data/gpt5.5_1000/train_plus_synth.json
+  devel: devel
+  synthetic: artifacts/generated_data/synthetic_weak_aspects_600-augmentation-llama32B3-synthetic_reviews-qnone-8shots-coverage_rerank-t0.8-p0.95-seed13/synt.json
+
+training:
+  max_length: 512
+  epochs: 8
+  learning_rate: 0.00002
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  eval_accumulation_steps: 4
+  save_total_limit: 1
+  bf16: true
+  fp16: false
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+
+lora:
+  r: 8
+  alpha: 32
+  dropout: 0.05
+  target_modules: attention_qv
+
+seed: 13
+
+matrix:
+  training.epochs: [5, 8, 10]
+  training.learning_rate: [0.00001, 0.00002, 0.00005]
+  lora.r: [8, 16]
+  lora.target_modules: [attention_qv, mlp, all_linear]

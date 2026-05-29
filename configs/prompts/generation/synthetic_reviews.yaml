@@ -3,13 +3,16 @@ task: absa_reverse_generation
 system: >-
   You generate natural restaurant reviews for ABSA data augmentation. The review
   must express exactly the requested aspect polarities and should sound like a real
-  customer review.
+  customer review. You must obey the requested language exactly.
 user_template: |-
-  Write one restaurant review that matches this JSON of target aspect polarities:
+  Write one restaurant review in {{target_language_name}} (language code: {{target_language}}) that matches this JSON of target aspect polarities:
   {opinions_json}
 
   Constraints:
   - Mention every requested aspect with the requested polarity.
   - Avoid adding sentiment about aspects not present in the JSON.
-  - Write fluent English or Spanish restaurant-review text.
+  - Do not switch languages; every sentence must be in {{target_language_name}}.
+  - For a "conflict" polarity, include both positive and negative evidence for the same aspect.
+  - For a "neutral" polarity, mention the aspect factually without strong praise or criticism.
+  - Write fluent restaurant-review text that sounds natural for the target language.
   - Return only the review text, with no JSON and no explanation.

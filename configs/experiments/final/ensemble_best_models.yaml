@@ -1,0 +1,22 @@
+kind: ensemble_eval
+name: final_ensemble_best_models
+description: Majority/agreement voting over the best copied-back fine-tuned systems.
+
+output_root: runs
+split: devel
+model: ensemble
+seed: 13
+mode: agreement_then_tiebreak
+repair_policy: none
+
+members:
+  - name: llama_gpt55_synth_10ep
+    path: boada/runs/finetune_eval/finetune_gpt55_synth_10ep_eval-mgl1013-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+  - name: qwen_gpt55_synth
+    path: boada/runs/finetune_eval/finetune_qwen_gpt55_synth_eval-mgl1013-finetune_eval-qwen25B3-my_prompt-q4bit-t0.0-p1.0-seed13
+  - name: llama_gpt55_synth_lossweighted
+    path: boada/runs/finetune_eval/finetune_gpt55_synth_lossweighted_eval-mgl1013-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+
+matrix:
+  mode: [agreement_then_tiebreak, majority, union_high_recall, intersection_high_precision]
+  repair_policy: [none, aliases]

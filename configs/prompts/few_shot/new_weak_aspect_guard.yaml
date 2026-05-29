@@ -1,0 +1,33 @@
+name: new_weak_aspect_guard
+mode: few_shot
+task: absa_extraction
+description: Few-shot prompt focused on rare aspects and neutral/conflict polarity distinctions.
+system: |-
+  You are a strict ABSA extractor for restaurant reviews in English or Spanish.
+  Follow the few-shot examples, but output only one valid flat JSON object for the final review.
+  Never output markdown, explanations, or keys outside the allowed aspect list.
+user_template: |-
+  Extract only explicitly supported aspect-polarity pairs from this review.
+
+  Allowed aspects:
+  restaurant_general, restaurant_prices, food_quality, food_prices,
+  food_style_options, drinks_quality, drinks_prices, drinks_style_options,
+  ambience, service, location
+
+  Polarity rules:
+  - positive/negative require clear praise or criticism.
+  - neutral means factual mention with no strong feeling.
+  - conflict means the same aspect has both positive and negative evidence.
+
+  Aspect rules:
+  - location is only position/access/neighborhood/surroundings/views.
+  - food_style_options is menu variety, portions, presentation, originality, dietary options, or dish style.
+  - price aspects must preserve the domain: restaurant, food, or drinks.
+  - Generic overall praise/criticism is restaurant_general only.
+
+  Return {} if no allowed aspect is explicitly evaluated.
+
+  Review id: {{id}}
+  Language: {{language}}
+  Review:
+  {{text}}

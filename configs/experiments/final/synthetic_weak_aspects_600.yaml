@@ -1,0 +1,36 @@
+kind: augmentation
+name: synthetic_weak_aspects_600
+description: Targeted synthetic data for weak aspects and weak neutral/conflict polarities.
+disable_run_name_suffix: true
+
+output_root: artifacts/generated_data
+count: 600
+language_policy: balanced
+polarity_policy: weak_polarity_boost
+target_aspects:
+  - location
+  - food_style_options
+  - drinks_quality
+  - food_prices
+  - restaurant_prices
+force_target_aspect: true
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/generation/synthetic_reviews.yaml
+
+few_shot:
+  shots: 8
+  strategy: coverage_rerank
+
+decoding:
+  temperature: 0.8
+  top_p: 0.95
+  max_new_tokens: 160
+
+seed: 13

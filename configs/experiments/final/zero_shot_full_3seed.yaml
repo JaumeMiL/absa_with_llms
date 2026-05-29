@@ -1,0 +1,41 @@
+kind: inference
+name: final_zero_shot_full_3seed
+description: Final zero-shot assignment sweep with prompts, models, quantization, decoding, seeds, and optional repair evaluation.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/zero_shot/my_prompt.yaml
+
+few_shot:
+  shots: 0
+  strategy: first
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+  constraint: none
+
+repair_policy: none
+seeds: [13, 42, 101]
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none, 4bit]
+  prompt.file:
+    - configs/prompts/zero_shot/my_prompt.yaml
+    - configs/prompts/zero_shot/cot.yaml
+    - configs/prompts/zero_shot/confusion_guard.yaml
+    - configs/prompts/zero_shot/new_weak_aspect_guard.yaml
+  decoding.temperature: [0.0, 0.1, 0.3]
+  decoding.top_p: [1.0, 0.9]
+  repair_policy: [none, aliases]

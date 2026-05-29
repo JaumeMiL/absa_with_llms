@@ -1,0 +1,81 @@
+kind: ensemble_eval
+name: actual_best_placeholder
+description: Ensembles over the actual best copied-back Boada/Vast prediction files.
+
+output_root: boada/boada_runs
+split: devel
+model: ensemble
+seed: 13
+repair_policy: none
+
+matrix:
+  mode: [agreement_then_tiebreak, majority, union_high_recall, intersection_high_precision]
+
+variants:
+  - name: actual_best_independent3
+    members:
+      - name: llama_weak_all_linear_t01_p09
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p0.9-seed13
+      - name: qwen_weak_all_linear_t01_p10
+        path: boada/boada_runs/runs/finetune_eval/eval_after_training_decoding_additional_finetune_qwen_weak_only-finetune-qwen25B3-weak_polarity_only_all_linear-my_prompt-q4bit-lr2e-05-ep3-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.1-p1.0-seed13
+      - name: best_fewshot_llama_cot_30_random
+        path: boada/boada_runs/few_shot/additional_qnone_best_parallel-few_shot-llama32B3-cot-qnone-30shots-random-t0.0-p1.0-seed13
+
+  - name: actual_best_independent5
+    members:
+      - name: llama_weak_all_linear_t01_p09
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p0.9-seed13
+      - name: llama_gpt55_10ep
+        path: boada/boada_runs/runs/finetune_eval/finetune_gpt55_synth_10ep_eval-mgl1013-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+      - name: qwen_weak_all_linear_t01_p10
+        path: boada/boada_runs/runs/finetune_eval/eval_after_training_decoding_additional_finetune_qwen_weak_only-finetune-qwen25B3-weak_polarity_only_all_linear-my_prompt-q4bit-lr2e-05-ep3-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.1-p1.0-seed13
+      - name: qwen_gpt55
+        path: boada/boada_runs/finetune_eval/final_eval_existing_adapter_final_finetune_qwen_required-finetune-qwen25B3-gpt55_synth_qlora-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraattention_qv-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.0-p1.0-seed13
+      - name: best_fewshot_llama_cot_30_random
+        path: boada/boada_runs/few_shot/additional_qnone_best_parallel-few_shot-llama32B3-cot-qnone-30shots-random-t0.0-p1.0-seed13
+
+  - name: actual_best_finetune4
+    members:
+      - name: llama_weak_all_linear_t01_p09
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p0.9-seed13
+      - name: llama_gpt55_10ep
+        path: boada/boada_runs/runs/finetune_eval/finetune_gpt55_synth_10ep_eval-mgl1013-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+      - name: qwen_weak_all_linear_t01_p10
+        path: boada/boada_runs/runs/finetune_eval/eval_after_training_decoding_additional_finetune_qwen_weak_only-finetune-qwen25B3-weak_polarity_only_all_linear-my_prompt-q4bit-lr2e-05-ep3-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.1-p1.0-seed13
+      - name: qwen_gpt55
+        path: boada/boada_runs/finetune_eval/final_eval_existing_adapter_final_finetune_qwen_required-finetune-qwen25B3-gpt55_synth_qlora-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraattention_qv-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.0-p1.0-seed13
+
+  - name: actual_best_llama_decoding3
+    members:
+      - name: llama_weak_all_linear_t01_p09
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p0.9-seed13
+      - name: llama_weak_all_linear_t01_p10
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p1.0-seed13
+      - name: llama_weak_all_linear_greedy
+        path: boada/boada_runs/finetune_eval/final_eval_existing_adapter_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+
+  - name: actual_best_mixed7
+    members:
+      - name: llama_weak_all_linear_t01_p09
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p0.9-seed13
+      - name: llama_weak_all_linear_t01_p10
+        path: boada/boada_runs/finetune_eval/final_finetune_decoding_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.1-p1.0-seed13
+      - name: llama_weak_all_linear_greedy
+        path: boada/boada_runs/finetune_eval/final_eval_existing_adapter_final_finetune_llama_weak_polarity_synth-finetune-llama32B3-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+      - name: llama_gpt55_10ep
+        path: boada/boada_runs/runs/finetune_eval/finetune_gpt55_synth_10ep_eval-mgl1013-finetune_eval-llama32B3-my_prompt-q4bit-t0.0-p1.0-seed13
+      - name: qwen_weak_all_linear_t01_p10
+        path: boada/boada_runs/runs/finetune_eval/eval_after_training_decoding_additional_finetune_qwen_weak_only-finetune-qwen25B3-weak_polarity_only_all_linear-my_prompt-q4bit-lr2e-05-ep3-bs1-ga8-len512-bf16-loraall_linear-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.1-p1.0-seed13
+      - name: qwen_gpt55
+        path: boada/boada_runs/finetune_eval/final_eval_existing_adapter_final_finetune_qwen_required-finetune-qwen25B3-gpt55_synth_qlora-my_prompt-q4bit-lr2e-05-ep5-bs1-ga8-len512-bf16-loraattention_qv-seed13-finetune_eval-qwen25B3-my_prompt-q4bit-t0.0-p1.0-seed13
+      - name: best_fewshot_llama_cot_30_random
+        path: boada/boada_runs/few_shot/additional_qnone_best_parallel-few_shot-llama32B3-cot-qnone-30shots-random-t0.0-p1.0-seed13
+
+  - name: actual_best_fewshot3
+    members:
+      - name: best_fewshot_llama_cot_30_random
+        path: boada/boada_runs/few_shot/additional_qnone_best_parallel-few_shot-llama32B3-cot-qnone-30shots-random-t0.0-p1.0-seed13
+      - name: best_fewshot_qwen_myprompt_30_random
+        path: boada/boada_runs/few_shot/final_few_shot_ns2030_original_strategy-few_shot-qwen25B3-my_prompt-q4bit-30shots-random-t0.0-p1.0-seed13
+      - name: best_fewshot_qwen_cot_30_random
+        path: boada/boada_runs/few_shot/additional_qnone_best_parallel-few_shot-qwen25B3-cot-qnone-30shots-random-t0.0-p1.0-seed13

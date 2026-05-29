@@ -1,0 +1,29 @@
+kind: augmentation
+name: synthetic_llama32B3_1000_language_fixed
+description: Corrected Llama synthetic dataset with train-like English/Spanish balance and train-like polarity distribution.
+disable_run_name_suffix: true
+
+output_root: artifacts/generated_data
+count: 1000
+language_policy: train_distribution
+polarity_policy: train_distribution
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/generation/synthetic_reviews.yaml
+
+few_shot:
+  shots: 8
+  strategy: diverse
+
+decoding:
+  temperature: 0.8
+  top_p: 0.95
+  max_new_tokens: 160
+
+seed: 13

@@ -1,0 +1,41 @@
+kind: inference
+name: final_few_shot_required_ns_3seed
+description: Final few-shot assignment sweep with required 20/30 shots, 4bit, seeds, and weak-aspect selector.
+
+split: devel
+output_root: runs
+limit:
+
+model:
+  name: llama32B3
+  path:
+  quantization: none
+  device: auto
+
+prompt:
+  file: configs/prompts/few_shot/my_prompt.yaml
+
+few_shot:
+  shots: 5
+  strategy: random
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+  constraint: none
+
+repair_policy: none
+seeds: [13, 42, 101]
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none, 4bit]
+  prompt.file:
+    - configs/prompts/few_shot/my_prompt.yaml
+    - configs/prompts/few_shot/cot.yaml
+    - configs/prompts/few_shot/confusion_guard.yaml
+    - configs/prompts/few_shot/new_weak_aspect_guard.yaml
+  few_shot.shots: [5, 10, 20, 30]
+  few_shot.strategy: [random, diverse, coverage_rerank]
+  repair_policy: [none, aliases]

@@ -1,0 +1,40 @@
+kind: inference
+name: final_few_shot_decoding_best
+description: Focused decoding sweep for the strongest few-shot candidates.
+
+split: devel
+output_root: runs
+
+model:
+  name: llama32B3
+  path:
+  quantization: 4bit
+  device: auto
+
+prompt:
+  file: configs/prompts/few_shot/cot.yaml
+
+few_shot:
+  shots: 10
+  strategy: random
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 512
+  constraint: none
+
+repair_policy: none
+seed: 13
+
+matrix:
+  model.name: [llama32B3, qwen25B3]
+  model.quantization: [none, 4bit]
+  prompt.file:
+    - configs/prompts/few_shot/cot.yaml
+    - configs/prompts/few_shot/new_weak_aspect_guard.yaml
+  few_shot.shots: [10, 20, 30]
+  few_shot.strategy: [random, coverage_rerank]
+  decoding.temperature: [0.0, 0.1, 0.2]
+  decoding.top_p: [1.0, 0.9, 0.95]
+  repair_policy: [none, aliases]
