@@ -107,36 +107,6 @@ def generate_text(model, tokenizer, messages, temperature, top_p, max_new_tokens
     gen_text = tokenizer.decode(gen_tokens[0][promptlen:], skip_special_tokens=True)
     return gen_text
 
-"""
-Com a referencia, antic feia
-
-
-# ns en quin context necessitem realment la funcio de encode per separat :)
-def encode(tokenizer, messages) :
-    # convert the sequence of messages to an actual prompt in the format
-    # expected by the model.
-    # Tokenize and encode the prompt.
-    input_ids = tokenizer.apply_chat_template(messages,
-                                              tokenize=True,
-                                              add_generation_prompt=True,
-                                              return_tensors="pt").to("cuda")
-    return input_ids
-
-
-def generate(model, tokenizer, input_ids):
-    # generate likely continuation (assistant answer)
-    with torch.no_grad():
-        gen_tokens = model.generate(input_ids,
-                                    max_new_tokens=256,
-                                    pad_token_id=tokenizer.eos_token_id
-                                   )
-    promptlen = len(input_ids[0])
-    # decode obtained tokens back into text
-    gen_text = tokenizer.decode(gen_tokens[0][promptlen:], skip_special_tokens=True)
-    return gen_text
-
-"""
-
 
 # NOSE SI POSAR-LO AQUI O EN UN COMMON / BUILDERS o algo aixi pero bno
 def load_model_and_tokenizer(model_name, quantization, adapter = None, device = "auto", model_path = None):
