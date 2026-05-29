@@ -12,12 +12,36 @@ from constants import get_model_spec, resolve_model_path, normalize_quantization
 from constants import RUNS_DIR, ensure_dir
 from common import load_prompt, render_extraction_messages
 import torch
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from datasets import Dataset
 from transformers import TrainingArguments
 from transformers import Trainer
 from modeling import build_model_load_kwargs
+
+
+LORA_TARGET_POLICIES = {
+    "attention_qv": ("q_proj", "v_proj"),
+    "attention_all": ("q_proj", "k_proj", "v_proj", "o_proj"),
+    "mlp": ("gate_proj", "up_proj", "down_proj"),
+    "all_linear": ("q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"),
+}
+
+
+def resolve_lora_target_modules(model_name, policy_or_modules):
+    spec = get_model_spec(model_name)
+    if not policy_or_modules:
+        return list(spec.lora_targets), "attention_qv"
+    if isinstance(policy_or_modules, (list, tuple)):
+        return list(policy_or_modules), ",".join(policy_or_modules)
+    policy = str(policy_or_modules).strip()
+    if policy in LORA_TARGET_POLICIES:
+        return list(LORA_TARGET_POLICIES[policy]), policy
+    if "," in policy:
+        modules = [item.strip() for item in policy.split(",") if item.strip()]
+        return modules, "custom"
+    if spec.local_smoke:
+        return list(spec.lora_targets), policy
+    raise ValueError(f"Unknown LoRA target_modules policy: {policy_or_modules}")
 
 
 def _ensure_chat_template(tokenizer):
@@ -32,12 +56,29 @@ def _ensure_chat_template(tokenizer):
         )
 
 
+def _as_token_ids(value):
+    if hasattr(value, "ids"):
+        return list(value.ids)
+    if hasattr(value, "input_ids") and not isinstance(value, dict):
+        return _as_token_ids(value.input_ids)
+    if isinstance(value, dict):
+        return _as_token_ids(value["input_ids"])
+    if hasattr(value, "tolist"):
+        value = value.tolist()
+    if value and isinstance(value[0], list):
+        value = value[0]
+    return list(value)
+
+
 # DFDSAFASDFA HAURIA DE SER LA MATEIXA QUE LOAD MODEL AND TOKENIZER SEGURAMENT! PASSA QUE
 # AQUELLA NO TE SUPORT PER LORA PARAMETRES
-def load_training_model_and_tokenizer(model_name, model_path_override, quantization, lora_r, lora_alpha, lora_dropout, device="auto"):
+def load_training_model_and_tokenizer(model_name, model_path_override, quantization, lora_r, lora_alpha, lora_dropout, device="auto", lora_target_modules="attention_qv"):
+    from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+
     quantization = normalize_quantization(quantization)
     spec = get_model_spec(model_name)
     model_path = resolve_model_path(model_name, model_path_override)
+    target_modules, _ = resolve_lora_target_modules(model_name, lora_target_modules)
 
     kwargs: dict[str, Any] = build_model_load_kwargs(
         spec,
@@ -55,7 +96,7 @@ def load_training_model_and_tokenizer(model_name, model_path_override, quantizat
     lora_config = LoraConfig(
         r=lora_r,
         lora_alpha=lora_alpha,
-        target_modules=list(spec.lora_targets),
+        target_modules=target_modules,
         lora_dropout=lora_dropout,
         bias="none",
         task_type="CAUSAL_LM",
@@ -75,31 +116,40 @@ def build_training_dataset(tokenizer, examples, prompt, max_length):
     # no ens interessa predir el prompt lol, només  l'output, i que cross entropy no tingui en compte el prompt
     rows = {"input_ids": [], "attention_mask": [], "labels": []}
     eos = tokenizer.eos_token or ""
+    pad_id = tokenizer.pad_token_id
+    if pad_id is None:
+        pad_id = tokenizer.eos_token_id
     for example in examples:
         messages = render_extraction_messages(prompt, example)
-        prompt_text = tokenizer.apply_chat_template(
+        prompt_ids = tokenizer.apply_chat_template(
             messages,
-            tokenize=False,
+            tokenize=True,
             add_generation_prompt=True,
         )
+        prompt_ids = _as_token_ids(prompt_ids)
         answer = json.dumps(example.get("gold", {}), ensure_ascii=False, sort_keys=True)
-        full_text = prompt_text + answer + eos # afegeix EOS token q ns si fa falta
-        tokenized = tokenizer(
-            full_text,
-            truncation=True,
-            max_length=max_length,
-            padding="max_length",
-        )
-        prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
-        labels = list(tokenized["input_ids"])
-        cutoff = min(len(prompt_ids), len(labels))
-        labels[:cutoff] = [-100] * cutoff
-        labels = [
-            -100 if mask == 0 or token == tokenizer.pad_token_id else label
-            for token, mask, label in zip(tokenized["input_ids"], tokenized["attention_mask"], labels)
-        ]
-        rows["input_ids"].append(tokenized["input_ids"])
-        rows["attention_mask"].append(tokenized["attention_mask"])
+        answer_ids = _as_token_ids(tokenizer(answer + eos, add_special_tokens=False))
+
+        # Preserve supervised assistant JSON tokens after truncation. The old
+        # full-text left truncation could mask all labels and give nan eval loss.
+        if len(answer_ids) >= max_length:
+            input_ids = answer_ids[-max_length:]
+            labels = list(input_ids)
+        else:
+            prompt_budget = max_length - len(answer_ids)
+            kept_prompt_ids = prompt_ids[-prompt_budget:] if prompt_budget > 0 else []
+            input_ids = kept_prompt_ids + answer_ids
+            labels = [-100] * len(kept_prompt_ids) + list(answer_ids)
+
+        attention_mask = [1] * len(input_ids)
+        pad_amount = max_length - len(input_ids)
+        if pad_amount > 0:
+            input_ids = input_ids + [pad_id] * pad_amount
+            attention_mask = attention_mask + [0] * pad_amount
+            labels = labels + [-100] * pad_amount
+
+        rows["input_ids"].append(input_ids)
+        rows["attention_mask"].append(attention_mask)
         rows["labels"].append(labels)
     return Dataset.from_dict(rows)
 
@@ -121,6 +171,9 @@ def _training_arguments(output_dir, args):
         "label_names": ["labels"],
         "bf16": args["bf16"],
         "fp16": args["fp16"],
+        "warmup_ratio": args["warmup_ratio"],
+        "lr_scheduler_type": args["lr_scheduler_type"],
+        "max_grad_norm": args["max_grad_norm"],
         "seed": args["seed"],
         "report_to": [],
     }
@@ -185,9 +238,14 @@ def run_training(
     lora_r = 8,
     lora_alpha = 16,
     lora_dropout = 0.05,
+    lora_target_modules = "attention_qv",
     save_total_limit = 2,
     bf16 = True,
     fp16 = False,
+    warmup_ratio = 0.0,
+    lr_scheduler_type = "linear",
+    max_grad_norm = 1.0,
+    early_stopping_patience = None,
     device = "auto",
 ):
     
@@ -226,12 +284,19 @@ def run_training(
         "lora_r": lora_r,
         "lora_alpha": lora_alpha,
         "lora_dropout": lora_dropout,
+        "lora_target_modules": lora_target_modules,
         "save_total_limit": save_total_limit,
         "bf16": bf16,
         "fp16": fp16,
+        "warmup_ratio": warmup_ratio,
+        "lr_scheduler_type": lr_scheduler_type,
+        "max_grad_norm": max_grad_norm,
+        "early_stopping_patience": early_stopping_patience,
     }
     run_id = run_name or make_run_id("finetune", params)
     run_dir = ensure_dir(Path(output_root) / "finetune" / run_id)
+    if (run_dir / "train_metrics.json").exists() and (run_dir / "adapter").exists():
+        return run_dir
     ensure_dir(run_dir / "logs")
     logger = RunLogger(run_dir / "logs" / "run.log")
     logger.log("Starting fine-tuning run", run_id=run_id, model=model_name, seed=seed, quantization=quantization)
@@ -258,13 +323,19 @@ def run_training(
         lora_r=lora_r,
         lora_alpha=lora_alpha,
         lora_dropout=lora_dropout,
+        lora_target_modules=lora_target_modules,
         device=device,
     )
     logger.log("Training model loaded")
     train_dataset = build_training_dataset(tokenizer, train_examples, prompt, max_length=max_length)
     eval_dataset = build_training_dataset(tokenizer, devel_examples, prompt, max_length=max_length)
     args = _training_arguments(run_dir / "checkpoints", params)
-    trainer = Trainer(model=model, args=args, train_dataset=train_dataset, eval_dataset=eval_dataset)
+    callbacks = []
+    if early_stopping_patience not in {None, "", 0, "0"}:
+        from transformers import EarlyStoppingCallback
+
+        callbacks.append(EarlyStoppingCallback(early_stopping_patience=int(early_stopping_patience)))
+    trainer = Trainer(model=model, args=args, train_dataset=train_dataset, eval_dataset=eval_dataset, callbacks=callbacks)
     logger.log("Starting trainer.train")
     result = trainer.train()
     logger.log("Trainer finished")
